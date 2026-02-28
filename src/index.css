@@ -60,3 +60,16 @@ html, body {
   flex-direction: column;
   flex: 1; /* Faz o container ocupar todo o espaço restante */
 }
+/* ... seu código existente ... */
+
+/* --- RESPONSIVIDADE PARA CELULAR (Ajustes Globais) --- */
+@media (max-width: 768px) {
+  main {
+    margin-top: 20px; /* Diminui o espaçamento no topo para celulares */
+    padding: 0 15px;  /* Reduz um pouco a margem lateral */
+  }
+
+  h1 {
+    font-size: 1.5rem; /* Ajusta o tamanho do título para caber na tela */
+  }
+}
