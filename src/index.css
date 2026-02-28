@@ -1,0 +1,62 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Adigiana+Toybox&display=swap'); /* Exemplo Google Fonts */
+/* OU configure o @font-face se for um arquivo local .ttf/.otf */
+
+/* Seu restante do código global que já tínhamos feito: */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* ... resto do seu CSS global ... */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Garante que larguras de 100% funcionem com padding */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white; /* Fundo branco para o resto da página */
+  font-family: sans-serif;
+  color: black;
+  
+  /* Ajustes para o Header ocupar 100% */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* O container da Home também deve ocupar a largura total */
+.home-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  /* Centralizamos apenas o conteúdo interno do main, não o Header */
+  text-align: center; 
+  margin-top: 40px;
+  padding: 0 20px; /* Margem de segurança nas laterais para o texto */
+}
+/* src/App.css ou src/index.css */
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Altura mínima de 100% da tela */
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Faz o container ocupar todo o espaço restante */
+}

@@ -1,0 +1,18 @@
+/* src/App.css ou src/index.css */
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Altura mínima de 100% da tela */
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Faz o container ocupar todo o espaço restante */
+}

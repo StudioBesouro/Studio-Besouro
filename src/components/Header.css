@@ -1,0 +1,101 @@
+/* src/components/Header.css */
+
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Diminuí o padding vertical de 20px para 10px para ficar mais fino */
+  padding: 10px 40px; 
+  background-color: #fdfdf5;
+  font-family: sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Logo */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-icon {
+  /* Logo maior: de 70px para 85px */
+  width: 85px; 
+  height: auto;
+  object-fit: contain;
+}
+
+.logo-text {
+  /* --- AJUSTES DE FONTE E GRADIENTE --- */
+  font-family: 'Adigiana Toybox', cursive;
+  /* Nome menor: de 2.2rem para 1.8rem */
+  font-size: 1.8rem;
+  font-weight: 500;
+  
+  /* Gradiente no texto */
+  background: linear-gradient(90deg, #84cc16 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  /* ------------------------------------ */
+  
+  white-space: nowrap;
+}
+
+/* Barra de Pesquisa */
+.search-container {
+  flex: 1;
+  max-width: 800px;
+  margin: 0 40px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #d4ed91;
+  border-radius: 50px;
+  /* Diminuí um pouco o padding interno vertical para acompanhar o cabeçalho mais fino */
+  padding: 8px 25px; 
+  background: white;
+}
+
+.search-icon {
+  color: #82b441;
+  margin-right: 15px;
+  font-size: 1.2rem;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 1.1rem;
+  color: #333;
+  background: transparent;
+}
+
+/* Botão de Contato */
+.contact-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(90deg, #a855f7, #7c3aed);
+  color: white;
+  border: none;
+  /* Ajustei o padding para ficar proporcional ao novo tamanho do header */
+  padding: 12px 30px; 
+  border-radius: 50px;
+  cursor: pointer;
+  
+  /* --- FONTE E PESO SOLICITADO --- */
+  font-family: sans-serif;
+  font-weight: 500;
+  font-size: 1rem; /* Diminuí ligeiramente a fonte do botão */
+  /* ------------------------------- */
+  
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.contact-button:hover {
+  opacity: 0.9;
+}
