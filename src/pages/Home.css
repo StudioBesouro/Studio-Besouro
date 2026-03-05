@@ -1,193 +1,92 @@
-/* Home.css */
-
-:root {
-  /* --bg-creme-claro: #fdfef0; <- Removido, pois usaremos o gradiente no body */
-  --verde-besouro: #76bc21;   /* Verde da logo e botões ativos */
-  --roxo-besouro: #9333ea;    /* Roxo do nome Besouro e botão contato */
-  --texto-suave: #6b7280;     /* Cinza das descrições */
-  --borda-suave: #e5e7eb;
-}
-
-body {
-  margin: 0;
-  /* --- APLICADO O GRADIENTE DE TRÊS CORES --- */
-  background: linear-gradient(135deg, #ffeb9b 0%, #f7fee7 50%, #faf5ff 100%);
-  /* ----------------------------------------- */
-  font-family: 'Inter', sans-serif; /* Ou Segoe UI */
-  min-height: 100vh; /* Garante que o fundo cubra a tela toda */
-}
-
-/* --- HEADER --- */
-.header-container {
+/* --- ESTILO DO MODAL (ESTILO NOTÍCIA) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  padding: 15px 40px;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal-noticia {
   background: white;
-  border-bottom: 1px solid var(--borda-suave); /* Opcional: separação visual */
-}
-
-.logo-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-text-verde { color: var(--verde-besouro); font-weight: 600; font-size: 1.5rem; }
-.logo-text-roxo { color: var(--roxo-besouro); font-weight: 400; font-size: 1.5rem; }
-
-.search-bar {
-  flex: 1;
-  max-width: 600px;
-  margin: 0 20px;
-  position: relative;
-}
-
-.search-bar input {
   width: 100%;
-  padding: 10px 20px 10px 45px;
-  border-radius: 50px; /* Estilo pílula */
-  border: 1px solid #d1fae5;
-  outline: none;
-}
-
-.btn-contato {
-  background-color: var(--roxo-besouro);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* --- BANNER --- */
-.banner-section {
-  padding: 20px 40px;
-}
-
-.banner-box {
-  background-color: #333;
-  height: 400px;
-  border-radius: 35px; /* Bordas bem redondas como na imagem */
+  max-width: 1000px;
+  height: 550px;
+  border-radius: 30px;
   position: relative;
   overflow: hidden;
-  display: flex;
-  align-items: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
-.banner-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4); /* Escurece a foto para o texto aparecer */
-  padding: 60px;
+.modal-inner-content {
+  display: flex;
+  height: 100%;
+}
+
+.modal-image-side {
+  flex: 1.2;
+  background: #eee;
+}
+
+.modal-image-side img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-text-side {
+  flex: 1;
+  padding: 50px;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  color: white;
+  background: white;
 }
 
-.banner-overlay h2 { font-size: 2.8rem; margin: 0; max-width: 700px; }
-.banner-overlay p { font-size: 1.1rem; margin: 20px 0; max-width: 600px; }
-
-.btn-ler-mais {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  color: white;
+.tag-ifma {
+  background: #f7fee7;
+  color: #76bc21;
+  padding: 6px 15px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 0.8rem;
   width: fit-content;
-  padding: 8px 20px;
-  border-radius: 50px;
-  cursor: pointer;
 }
 
-/* --- CATEGORIAS --- */
-.section-title {
-  text-align: center;
-  color: #7c7c8a;
-  margin-top: 40px;
-  font-weight: 400;
+.modal-title {
+  color: #9333ea;
+  font-size: 2.2rem;
+  margin: 20px 0;
+  line-height: 1.2;
 }
 
-.nav-categories {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px;
-  flex-wrap: wrap;
-}
-
-.category-pill {
-  background: white;
-  border: 1px solid var(--borda-suave);
-  padding: 8px 18px;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.modal-description-text {
+  overflow-y: auto;
   color: #4b5563;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  line-height: 1.6;
+  font-size: 1.1rem;
 }
 
-.category-pill.active {
-  background-color: var(--verde-besouro);
-  color: white;
-  border-color: var(--verde-besouro);
-}
-
-/* --- CARDS --- */
-.grid-artes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  padding: 20px 40px;
-}
-
-.card-arte {
+.close-btn {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 35px; height: 35px;
+  border-radius: 50%;
+  border: none;
   background: white;
-  border-radius: 25px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  cursor: pointer;
+  font-size: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 10;
 }
 
-.card-image { width: 100%; height: 250px; object-fit: cover; }
-.card-body { padding: 20px; }
-.card-body h4 { margin: 0; font-size: 1.1rem; }
-.artist-label { color: var(--verde-besouro); margin: 5px 0; font-weight: 500; }
-.card-desc { color: var(--texto-suave); font-size: 0.9rem; line-height: 1.4; }
-
-.type-tag {
-  display: inline-block;
-  background: #f0fdf4;
-  color: #166534;
-  padding: 4px 12px;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  margin-top: 15px;
+/* Responsividade básica */
+@media (max-width: 768px) {
+  .modal-inner-content { flex-direction: column; }
+  .modal-noticia { height: auto; max-height: 90vh; }
 }
-
-/* --- FOOTER --- */
-.footer-besouro {
-  text-align: center;
-  padding: 60px 20px;
-  margin-top: 40px;
-  border-top: 1px solid #e2e8f0;
-  background-color: white; /* Footer destacado */
-}
-
-.footer-desc {
-  max-width: 600px;
-  margin: 15px auto 30px;
-  color: var(--texto-suave);
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-}
-
-.footer-links a { text-decoration: none; color: #4b5563; }
