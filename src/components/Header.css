@@ -9,15 +9,9 @@
   font-family: sans-serif;
   width: 100%;
   box-sizing: border-box;
-
-  /* --- ADICIONE ESTA LINHA AQUI --- */
   border-bottom: 2px solid #d4ed91; 
-  /* ------------------------------- */
 }
 
-/* ... resto do seu código permanece igual ... */
-
-/* Logo */
 .logo-container {
   display: flex;
   align-items: center;
@@ -34,18 +28,13 @@
   font-family: 'Adigiana Toybox', cursive;
   font-size: 1.8rem;
   font-weight: 500;
-  
-  /* Gradiente no texto */
   background: linear-gradient(90deg, #84cc16 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
-  
   white-space: nowrap;
 }
 
-/* Barra de Pesquisa */
 .search-container {
   flex: 1;
   max-width: 800px;
@@ -73,7 +62,7 @@
   background: transparent;
 }
 
-/* Botão de Contato */
+/* Botão de Contato Voltou a ser interativo */
 .contact-button {
   display: flex;
   align-items: center;
@@ -83,45 +72,26 @@
   border: none;
   padding: 12px 30px; 
   border-radius: 50px;
-  cursor: pointer;
-  
+  cursor: pointer; /* Mãozinha ao passar o mouse */
   font-family: sans-serif;
   font-weight: 500;
   font-size: 1rem;
-  
-  transition: opacity 0.2s;
-  /* Permitimos quebra de linha em telas pequenas */
-  white-space: normal; 
-  text-align: center;
-  justify-content: center;
+  transition: transform 0.2s ease, opacity 0.2s;
 }
 
 .contact-button:hover {
   opacity: 0.9;
+  transform: scale(1.02); /* Pequeno efeito ao passar o mouse */
 }
 
-/* --- AJUSTES PARA CELULAR (Telas menores que 768px) --- */
+/* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
   .main-header {
-    flex-direction: column; /* Empilha os itens verticalmente */
+    flex-direction: column;
     padding: 15px; 
-    gap: 15px; /* Espaço entre itens empilhados */
+    gap: 15px;
   }
-
-  .logo-container {
-    width: 100%;
-    justify-content: center; /* Centraliza a logo */
-  }
-
-  .search-container {
-    width: 100%; /* Ocupa toda a largura */
-    margin: 0;
-    order: 2; /* Garante que fique abaixo da logo */
-  }
-
-  .contact-button {
-    width: 100%; /* Ocupa toda a largura */
-    order: 3; /* Garante que fique abaixo da pesquisa */
-    padding: 10px;
-  }
+  .logo-container { width: 100%; justify-content: center; }
+  .search-container { width: 100%; margin: 0; order: 2; }
+  .contact-button { width: 100%; order: 3; padding: 10px; }
 }
