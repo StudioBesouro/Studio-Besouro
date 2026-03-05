@@ -1,22 +1,32 @@
-
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import Home from './pages/Home'; // Importe a página Home
-import './App.css'; // Importe seu CSS global aqui
+import Home from './pages/Home';
+import Contato from './pages/Contato'; 
+// --- 1. ADICIONE ESTA IMPORTAÇÃO ---
+import Cadastro from './pages/Cadastro'; 
+// ----------------------------------
+import './App.css';
 
 function App() {
   return (
-    <div id="root"> {/* Contêiner pai com min-height: 100vh */}
-      <Header />
-      
-      {/* O container que empurra o footer */}
-      <div className="main-content-wrapper">
-        <Home /> {/* O conteúdo da Home entra aqui */}
+    <Router> 
+      <div id="root">
+        <div className="main-content-wrapper">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/contato" element={<Contato />} />
+            
+            {/* --- 2. ADICIONE ESTA ROTA AQUI --- */}
+            <Route path="/cadastro" element={<Cadastro />} />
+            {/* ---------------------------------- */}
+          </Routes>
+        </div>
+        
+        <Footer />
       </div>
-      
-      <Footer />
-    </div>
+    </Router>
   );
 }
 

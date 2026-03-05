@@ -2,10 +2,13 @@
 
 .main-footer {
   width: 100%;
-  /* Mantemos o padding pequeno */
-  padding: 5px 20px; 
-  background-color: #fdfdf5;
-  border-top: 1px solid #eee;
+  padding: 5px 20px;
+  
+  /* --- ALTERAÇÕES PARA INTEGRAR O FOOTER --- */
+  background-color: transparent; /* Remove a cor de fundo sólida */
+  border-top: 1px solid #d9f99d; /* Borda superior verde lima claro */
+  /* ----------------------------------------- */
+  
   margin-top: auto;
   box-sizing: border-box;
 }
@@ -44,7 +47,6 @@
   font-size: 0.7rem; 
   color: #777;
   
-  /* --- AJUSTE AQUI --- */
   margin-top: 10px; /* Adiciona o afastamento entre a logo/nome e o texto */
   margin-bottom: 0;
   padding: 0;

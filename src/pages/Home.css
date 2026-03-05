@@ -1,17 +1,20 @@
 /* Home.css */
 
 :root {
-  --bg-creme-claro: #fdfef0; /* Fundo levemente amarelado da imagem */
-  --verde-besouro: #76bc21;  /* Verde da logo e botões ativos */
-  --roxo-besouro: #9333ea;   /* Roxo do nome Besouro e botão contato */
-  --texto-suave: #6b7280;    /* Cinza das descrições */
+  /* --bg-creme-claro: #fdfef0; <- Removido, pois usaremos o gradiente no body */
+  --verde-besouro: #76bc21;   /* Verde da logo e botões ativos */
+  --roxo-besouro: #9333ea;    /* Roxo do nome Besouro e botão contato */
+  --texto-suave: #6b7280;     /* Cinza das descrições */
   --borda-suave: #e5e7eb;
 }
 
 body {
   margin: 0;
-  background-color: var(--bg-creme-claro);
+  /* --- APLICADO O GRADIENTE DE TRÊS CORES --- */
+  background: linear-gradient(135deg, #ffeb9b 0%, #f7fee7 50%, #faf5ff 100%);
+  /* ----------------------------------------- */
   font-family: 'Inter', sans-serif; /* Ou Segoe UI */
+  min-height: 100vh; /* Garante que o fundo cubra a tela toda */
 }
 
 /* --- HEADER --- */
@@ -21,6 +24,7 @@ body {
   justify-content: space-between;
   padding: 15px 40px;
   background: white;
+  border-bottom: 1px solid var(--borda-suave); /* Opcional: separação visual */
 }
 
 .logo-area {
@@ -171,6 +175,7 @@ body {
   padding: 60px 20px;
   margin-top: 40px;
   border-top: 1px solid #e2e8f0;
+  background-color: white; /* Footer destacado */
 }
 
 .footer-desc {

@@ -9,7 +9,13 @@
   font-family: sans-serif;
   width: 100%;
   box-sizing: border-box;
+
+  /* --- ADICIONE ESTA LINHA AQUI --- */
+  border-bottom: 2px solid #d4ed91; 
+  /* ------------------------------- */
 }
+
+/* ... resto do seu código permanece igual ... */
 
 /* Logo */
 .logo-container {
