@@ -1,0 +1,396 @@
+/* ────────────────────────────────────────────────
+   1. CONTAINER PRINCIPAL E DASHBOARD
+───────────────────────────────────────────────── */
+.admin-page-wrapper {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.admin-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Gráfico de Status (Cards Coloridos) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  padding: 24px;
+  border-radius: 16px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.green { background: linear-gradient(135deg, #10b981, #059669); }
+.stat-card.yellow { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.stat-card.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+.stat-card p { margin: 0; font-size: 0.95rem; font-weight: 500; opacity: 0.9; }
+.stat-card strong { font-size: 2.5rem; display: block; line-height: 1; margin-top: 5px; }
+
+/* Cabeçalhos de Seção */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 40px 0 20px;
+}
+
+.section-header h2 { font-size: 1.5rem; color: #1e293b; margin: 0; }
+.section-header p { color: #64748b; margin: 4px 0 0; font-size: 0.9rem; }
+
+/* Botões de Ação Dashboard */
+.btn-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-new.green { background-color: #10b981; }
+.btn-new.purple { background-color: #8b5cf6; }
+.btn-new:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+/* Grid de Itens e Cards */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.item-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  transition: 0.3s;
+  position: relative;
+}
+
+.item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+}
+
+.banner-card img { width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid #f1f5f9; }
+.artista-card img { width: 100%; height: 220px; object-fit: cover; }
+
+.item-info { padding: 20px; }
+.item-info h3 { margin: 0 0 8px; font-size: 1.2rem; color: #1e293b; }
+.item-info p { font-size: 0.9rem; color: #64748b; margin-bottom: 18px; line-height: 1.5; }
+
+.badge-count {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f59e0b;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  z-index: 10;
+}
+
+/* Ações nos Cards */
+.card-actions-admin { display: flex; gap: 10px; margin-top: 15px; }
+
+.btn-edit-inline {
+  flex: 1; background-color: #f1f5f9; color: #1e293b; border: 1px solid #e2e8f0;
+  padding: 8px; border-radius: 6px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 5px; font-weight: 600; transition: 0.2s;
+}
+.btn-edit-inline:hover { background-color: #e2e8f0; }
+
+.btn-delete-inline, .btn-icon-delete {
+  background-color: #fff1f2; color: #e11d48; border: 1px solid #fecdd3;
+  padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+}
+.btn-delete-inline:hover, .btn-icon-delete:hover { background-color: #e11d48; color: white; }
+
+/* ────────────────────────────────────────────────
+   2. MODAL CORE (DESIGN COMPACTO COM ROLAGEM)
+───────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 550px;
+  height: 85vh; /* Altura fixa para scroll interno */
+  background: white;
+  border-radius: 24px;
+  overflow: hidden; 
+  box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid #e2e8f0;
+}
+
+/* Cabeçalho Fixo do Modal */
+.modal-header {
+  padding: 20px 28px;
+  background: #10b981; 
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.purple-theme .modal-header {
+  background: #8b5cf6 !important;
+}
+
+.modal-header h2, .modal-header h3 { 
+  color: white !important; 
+  margin: 0; 
+  font-size: 1.45rem; 
+  font-weight: 800;
+}
+
+.btn-close-modal { 
+  background: none; 
+  border: none; 
+  color: white; 
+  font-size: 1.8rem; 
+  cursor: pointer; 
+  transition: 0.2s; 
+}
+
+
+/* Corpo do Formulário com Rolagem */
+.form-new-design {
+  padding: 28px;
+  flex: 1;
+  overflow-y: auto !important; 
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-new-design::-webkit-scrollbar { width: 6px; }
+.form-new-design::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+/* Inputs e Labels */
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+.input-group label { font-weight: 700; color: #475569; font-size: 0.9rem; }
+
+.form-new-design input[type="text"],
+.form-new-design textarea {
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background-color: #ffffff;
+}
+
+.form-new-design input:focus, .form-new-design textarea:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+/* Rodapé Fixo do Modal */
+.modal-actions {
+  padding: 20px 28px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.btn-modal-save {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-modal-save.purple { background-color: #8b5cf6 !important; }
+.btn-modal-save:hover { filter: brightness(0.9); transform: translateY(-1px); }
+
+.btn-modal-cancel {
+  background-color: white;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ────────────────────────────────────────────────
+   3. UPLOAD DE ARQUIVO (OCULTANDO O BOTÃO NATIVO)
+───────────────────────────────────────────────── */
+.file-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.file-input-wrapper input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.file-input-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 25px 15px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 14px;
+  background-color: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 600;
+  text-align: center;
+}
+
+.file-input-label:hover {
+  border-color: #10b981;
+  color: #10b981;
+  background-color: #f0fdf4;
+}
+
+/* Estilos Específicos do Tema Roxo (Artistas) */
+.purple-theme .file-input-label:hover { 
+  border-color: #8b5cf6 !important; 
+  color: #8b5cf6 !important;
+  background-color: #f5f3ff !important; 
+}
+
+.file-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+@media (max-width: 600px) { .file-grid-2 { grid-template-columns: 1fr; } }
+
+
+/* BOTÃO GERENCIAR OBRAS */
+.btn-manage {
+  background-color: #8b5cf6;
+  color: white !important;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.btn-manage:hover {
+  background-color: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.btn-manage:active {
+  transform: translateY(0);
+}
+/* Efeito para os cards clicáveis */
+.clickable-stat {
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s;
+  user-select: none;
+}
+
+.clickable-stat:hover {
+  transform: translateY(-5px);
+  filter: brightness(1.1);
+}
+
+.clickable-stat:active {
+  transform: scale(0.98);
+}
+/* Container do botão Ver Mais */
+.view-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+/* Estilo do botão Ver Mais */
+.btn-view-more {
+  background-color: white;
+  color: #1e293b;
+  border: 2px solid #e2e8f0;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.btn-view-more:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #10b981; /* Muda para verde ao passar o mouse */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Se for na seção de artistas, podemos mudar a cor do hover para roxo para combinar */
+.admin-section:last-of-type .btn-view-more:hover {
+  color: #8b5cf6;
+}
+
+.btn-view-more svg {
+  transition: transform 0.2s ease;
+}
+
+.btn-view-more:hover svg {
+  transform: translateX(4px);
+}

@@ -1,0 +1,59 @@
+/* Importação de Fonte - Certifique-se de que o nome está correto no Google Fonts */
+/* Se a Adigiana não carregar, o sistema usará a 'sans-serif' definida no body */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap'); 
+
+/* Reset Global Único */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; /* Evita barra de rolagem horizontal indesejada */
+}
+
+body {
+  background-color: #ffffff;
+  font-family: 'Inter', sans-serif; /* Fonte legível como fallback */
+  color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Estrutura do React Root */
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Container Principal da Home */
+.home-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+  main {
+    margin-top: 20px;
+    padding: 0 15px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  /* Garante que imagens e cards não estourem a tela no mobile */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}

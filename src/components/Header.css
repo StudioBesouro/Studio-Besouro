@@ -1,0 +1,125 @@
+/* src/components/Header.css */
+
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 40px; 
+  background-color: #fdfdf5;
+  font-family: sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 2px solid #d4ed91; 
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-icon {
+  width: 85px; 
+  height: auto;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-family: 'Adigiana Toybox', cursive;
+  font-size: 1.8rem;
+  font-weight: 500;
+  background: linear-gradient(90deg, #84cc16 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+}
+
+.search-container {
+  flex: 1;
+  max-width: 600px; /* Reduzi um pouco para caber os dois botões melhor */
+  margin: 0 30px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #d4ed91;
+  border-radius: 50px;
+  padding: 8px 25px; 
+  background: white;
+}
+
+.search-icon {
+  color: #82b441;
+  margin-right: 15px;
+  font-size: 1.2rem;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 1.1rem;
+  color: #333;
+  background: transparent;
+}
+
+/* Container para alinhar os dois botões lado a lado */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Estilo Base para os Botões (Login e Contato) */
+.login-button-header, .contact-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  border: none;
+  padding: 12px 25px; 
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: transform 0.2s ease, opacity 0.2s;
+  white-space: nowrap;
+}
+
+/* Botão de Login Verde */
+.login-button-header {
+  background: linear-gradient(90deg, #84cc16, #65a30d);
+}
+
+/* Botão de Contato Roxo */
+.contact-button {
+  background: linear-gradient(90deg, #a855f7, #7c3aed);
+}
+
+/* Efeito Hover para ambos */
+.login-button-header:hover, .contact-button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.btn-icon, .mail-icon {
+  font-size: 1.1rem;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 1100px) {
+  .search-container { margin: 0 15px; }
+  .login-button-header, .contact-button { padding: 10px 18px; font-size: 0.85rem; }
+}
+
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    padding: 15px; 
+    gap: 15px;
+  }
+  .logo-container { width: 100%; justify-content: center; }
+  .search-container { width: 100%; margin: 0; order: 2; }
+  .header-actions { width: 100%; flex-direction: column; order: 3; }
+  .login-button-header, .contact-button { width: 100%; justify-content: center; }
+}

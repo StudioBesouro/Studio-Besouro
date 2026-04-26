@@ -1,0 +1,92 @@
+/* src/components/HeaderContato.css */
+
+.header-contato {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 40px; 
+  background-color: #fdfdf5;
+  border-bottom: 2px solid #d4ed91; /* A linha verde */
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* --- AJUSTE AQUI --- */
+  position: sticky;  /* Fixa o cabeçalho no topo */
+  top: 0;            /* Cola no topo da página */
+  z-index: 1000;     /* Garante que fique acima de tudo */
+  /* ------------------- */
+}
+/* ... resto do CSS ... */
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-img {
+  width: 85px; /* Tamanho igual ao da Home */
+  height: auto;
+  object-fit: contain;
+}
+
+.logo-name {
+  font-family: 'Adigiana Toybox', cursive;
+  font-size: 1.8rem; /* Tamanho igual ao da Home */
+  font-weight: 500;
+  
+  /* Gradiente no texto aplicado diretamente na classe logo-name */
+  background: linear-gradient(90deg, #84cc16 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  
+  white-space: nowrap;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #84cc16;
+  color: white;
+  border: none;
+  padding: 12px 30px; /* Padding igual ao botão da home para tamanho parecido */
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s, opacity 0.2s;
+  white-space: nowrap;
+}
+
+.back-button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.home-icon {
+  font-size: 1.2rem;
+}
+
+/* Responsividade igual à da Home */
+@media (max-width: 768px) {
+  .header-contato {
+    flex-direction: column;
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .logo-section {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .back-button {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+  }
+}
