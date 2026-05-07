@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Importamos useEffect
 import './Banner.css';
 
 const Banner = ({ noticias }) => {
@@ -7,6 +7,7 @@ const Banner = ({ noticias }) => {
 
   const noticiaAtual = noticias[indexAtual];
 
+  // Funções de navegação
   const proximaNoticia = () => {
     setIndexAtual((prev) => (prev + 1) % noticias.length);
   };
@@ -15,16 +16,31 @@ const Banner = ({ noticias }) => {
     setIndexAtual((prev) => (prev - 1 + noticias.length) % noticias.length);
   };
 
+  // --- LÓGICA DE AUTO-PLAY ---
+  useEffect(() => {
+    // Só inicia o timer se houver mais de uma notícia e o modal estiver fechado
+    if (noticias.length > 1 && !aberto) {
+      const intervalo = setInterval(() => {
+        proximaNoticia();
+      }, 5000); // 5000ms = 5 segundos
+
+      // Limpa o intervalo quando o componente desmonta ou o estado muda
+      return () => clearInterval(intervalo);
+    }
+  }, [indexAtual, aberto, noticias.length]); 
+  // ---------------------------
+
   if (!noticiaAtual || noticias.length === 0) return null;
 
   const temMaisDeUma = noticias.length > 1;
-  const naoEhPrimeiro = indexAtual > 0;
 
   return (
     <>
       <section className="banner-wrapper">
         <div className="banner">
+          {/* Key ajuda o React a entender a troca e permite animações de fade via CSS */}
           <img 
+            key={noticiaAtual.id}
             src={noticiaAtual.imagem_url} 
             alt={noticiaAtual.titulo} 
             className="banner-image" 
@@ -42,23 +58,18 @@ const Banner = ({ noticias }) => {
           </div>
         </div>
 
-        {/* Botões de navegação - só aparecem se tiver mais de 1 notícia */}
         {temMaisDeUma && (
           <>
-            {/* Botão Anterior - só aparece se não for o primeiro */}
-            {naoEhPrimeiro && (
-              <button 
-                className="banner-nav-btn prev" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  anteriorNoticia();
-                }}
-              >
-                &#8249; {/* seta esquerda */}
-              </button>
-            )}
+            <button 
+              className="banner-nav-btn prev" 
+              onClick={(e) => {
+                e.stopPropagation();
+                anteriorNoticia();
+              }}
+            >
+              &#8249;
+            </button>
 
-            {/* Botão Próximo - sempre visível quando tem mais de 1 */}
             <button 
               className="banner-nav-btn next" 
               onClick={(e) => {
@@ -66,13 +77,24 @@ const Banner = ({ noticias }) => {
                 proximaNoticia();
               }}
             >
-              &#8250; {/* seta direita */}
+              &#8250;
             </button>
+
+            {/* Indicadores Visuais (opcional, mas ajuda o usuário) */}
+            <div className="banner-dots">
+              {noticias.map((_, idx) => (
+                <span 
+                  key={idx} 
+                  className={`dot ${idx === indexAtual ? 'active' : ''}`}
+                  onClick={() => setIndexAtual(idx)}
+                />
+              ))}
+            </div>
           </>
         )}
       </section>
 
-      {/* MODAL (mantido igual) */}
+      {/* MODAL */}
       {aberto && (
         <div className="banner-modal" onClick={() => setAberto(false)}>
           <div className="banner-modal-content" onClick={(e) => e.stopPropagation()}>
