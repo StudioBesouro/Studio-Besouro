@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FiGrid, FiX } from 'react-icons/fi';
 import './ArtistaObras.css'; 
-import './modal.css'; 
+import './Modal.css'; 
 
 const ArtistaObras = ({ obras, nomeArtista }) => {
   const [obraSelecionada, setObraSelecionada] = useState(null);
