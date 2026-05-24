@@ -1,27 +1,23 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from "../lib/supabaseClient"; 
 import { FiPlus, FiArrowLeft, FiCamera, FiEdit2, FiCheck, FiX, FiImage, FiTrash2 } from 'react-icons/fi'; 
 
 import { useArtista } from '../hooks/useArtista';
-import ModalNovaObra from '../components/ModalNovaObra';
-import ModalCropper from '../components/ModalCropper';
+import ModalNovaObra from '../components/Admin/ModalNovaObra'
 
 import './PaginaArtista.css';
+import '../components/modal.css';
 
 const PaginaArtista = () => {
   const { id } = useParams(); 
   const navigate = useNavigate();
-  const cropperRef = useRef(null);
 
   const { artista, setArtista, loading, buscarDados } = useArtista(id);
 
   const [editBio, setEditBio] = useState(false);
   const [tempBio, setTempBio] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [imageToCrop, setImageToCrop] = useState(null);
-  const [showCropper, setShowCropper] = useState(false);
-  const [tipoUpload, setTipoUpload] = useState(""); 
   const [showModalNova, setShowModalNova] = useState(false);
   const [novaObra, setNovaObra] = useState({ titulo: "", descricao: "", categoria: "Desenho", arquivo: null });
   
@@ -34,35 +30,40 @@ const PaginaArtista = () => {
   const mapaCategorias = { 'Desenho': 1, 'Pintura': 2, 'Música': 3, 'Literatura': 4, 'Fotografia': 5, 'Escultura': 6 };
   const mapaCategoriasInverso = Object.fromEntries(Object.entries(mapaCategorias).map(([k, v]) => [v, k]));
 
-  const handleSelectFile = (e, tipo) => {
+  const handleSelectFile = async (e, tipo) => {
     const file = e.target.files[0];
-    if (file) {
-      setTipoUpload(tipo);
-      const reader = new FileReader();
-      reader.onload = () => { setImageToCrop(reader.result); setShowCropper(true); };
-      reader.readAsDataURL(file);
-    }
-    e.target.value = "";
-  };
+    if (!file) return;
 
-  const handleFinalUpload = async () => {
-    const cropper = cropperRef.current?.cropper;
-    if (!cropper) return;
     setUploading(true);
-    setShowCropper(false);
     try {
-      const canvas = cropper.getCroppedCanvas({
-        width: tipoUpload === 'foto_perfil_url' ? 500 : 1200,
-        height: tipoUpload === 'foto_perfil_url' ? 500 : 675,
-      });
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
-      const fileName = `${tipoUpload}_${id}_${Date.now()}.jpg`;
-      await supabase.storage.from('artistas').upload(fileName, blob, { upsert: true });
-      const { data: { publicUrl } } = supabase.storage.from('artistas').getPublicUrl(fileName);
-      await supabase.from('perfil_artista').update({ [tipoUpload]: publicUrl }).eq('id_artista', id);
-      setArtista(prev => ({ ...prev, [tipoUpload]: `${publicUrl}?t=${Date.now()}` }));
-      alert("Imagem atualizada!");
-    } catch (e) { alert(e.message); } finally { setUploading(false); }
+      const ext = file.name.split('.').pop();
+      const fileName = `${tipo}_${id}_${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('artistas')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('artistas')
+        .getPublicUrl(fileName);
+
+      const { error: updateError } = await supabase
+        .from('perfil_artista')
+        .update({ [tipo]: publicUrl })
+        .eq('id_artista', id);
+
+      if (updateError) throw updateError;
+
+      setArtista(prev => ({ ...prev, [tipo]: `${publicUrl}?t=${Date.now()}` }));
+      alert("Imagem updated successfully!");
+    } catch (error) {
+      alert("Erro ao enviar imagem: " + error.message);
+    } finally {
+      setUploading(false);
+      e.target.value = ""; 
+    }
   };
 
   const abrirDetalhes = (obra) => {
@@ -120,10 +121,6 @@ const PaginaArtista = () => {
 
   return (
     <div className="perfil-container page-no-header">
-      <ModalCropper 
-        show={showCropper} src={imageToCrop} cropperRef={cropperRef} 
-        tipoUpload={tipoUpload} onBlur={() => setShowCropper(false)} onConfirm={handleFinalUpload} 
-      />
 
       <div className="topo-navegacao">
         <button className="btn-voltar-simples" onClick={() => navigate(-1)}><FiArrowLeft /> Voltar</button>
@@ -199,49 +196,62 @@ const PaginaArtista = () => {
         novaObra={novaObra} setNovaObra={setNovaObra} uploading={uploading} categoriasLista={categoriasLista}
       />
       
+      {/* MODAL AJUSTADO PARA DUAS COLUNAS ASYNC COM O MODAL.CSS */}
       {showModalDetalhe && obraSelecionada && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>{modoEdicao ? "Editar Obra" : obraSelecionada.titulo}</h3>
-              <button className="btn-close" onClick={() => { setShowModalDetalhe(false); setModoEdicao(false); }}><FiX size={24}/></button>
-            </div>
+        <div className="modal-overlay" onClick={() => { setShowModalDetalhe(false); setModoEdicao(false); }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            
+            <button className="modal-close" onClick={() => { setShowModalDetalhe(false); setModoEdicao(false); }}>
+              <FiX />
+            </button>
+
             <div className="modal-body">
-              <img src={obraSelecionada.imagem_url} alt={obraSelecionada.titulo} className="img-detalhe-obra" style={{ width: '100%', borderRadius: '16px', maxHeight: '340px', objectFit: 'cover' }} />
-              {!modoEdicao ? (
-                <>
-                  <div className="categoria-badge">
-                    {mapaCategoriasInverso[obraSelecionada.id_categoria]}
+              {/* Coluna da Imagem */}
+              <div className="modal-image-container">
+                <img src={obraSelecionada.imagem_url} alt={obraSelecionada.titulo} />
+              </div>
+
+              {/* Coluna de Informações / Form de Edição */}
+              <div className="modal-info">
+                {!modoEdicao ? (
+                  <>
+                    <h2>{obraSelecionada.titulo}</h2>
+                    <div className="modal-meta">
+                      <span>{mapaCategoriasInverso[obraSelecionada.id_categoria]}</span>
+                    </div>
+                    <div className="modal-description">
+                      <p>{obraSelecionada.descricao || <em>Sem descrição cadastrada.</em>}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="form-edicao-obra" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+                    <h3 style={{ margin: '0 0 10px 0', color: '#1e293b' }}>Editar Informações</h3>
+                    <input value={formEdicao.titulo} onChange={e => setFormEdicao({...formEdicao, titulo: e.target.value})} placeholder="Título" className="textarea-fake" style={{ minHeight: 'auto', padding: '12px' }} />
+                    <select value={formEdicao.categoria} onChange={e => setFormEdicao({...formEdicao, categoria: e.target.value})} className="textarea-fake" style={{ minHeight: 'auto', padding: '12px', appearance: 'auto' }}>
+                      {categoriasLista.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                    </select>
+                    <textarea value={formEdicao.descricao} onChange={e => setFormEdicao({...formEdicao, descricao: e.target.value})} rows={4} placeholder="Descrição" className="textarea-edit" />
                   </div>
-                  <div className="descricao-container">
-                    <strong>Descrição:</strong>
-                    <p>{obraSelecionada.descricao || <em>Sem descrição cadastrada.</em>}</p>
-                  </div>
-                </>
-              ) : (
-                <div className="form-edicao-obra">
-                  <input value={formEdicao.titulo} onChange={e => setFormEdicao({...formEdicao, titulo: e.target.value})} placeholder="Título" className="input-simples" />
-                  <select value={formEdicao.categoria} onChange={e => setFormEdicao({...formEdicao, categoria: e.target.value})} className="select-simples">
-                    {categoriasLista.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                  </select>
-                  <textarea value={formEdicao.descricao} onChange={e => setFormEdicao({...formEdicao, descricao: e.target.value})} rows={4} placeholder="Descrição" className="textarea-simples" />
+                )}
+
+                {/* Rodapé Interno do Painel de Informações */}
+                <div style={{ marginTop: 'auto', paddingTop: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  {modoEdicao ? (
+                    <>
+                      <button className="btn-cancel-small" style={{ padding: '10px 16px' }} onClick={() => setModoEdicao(false)}>Cancelar</button>
+                      <button className="btn-save-small" style={{ padding: '10px 16px' }} onClick={salvarEdicaoObra}>Salvar</button>
+                    </>
+                  ) : (
+                    <>
+                      <button className="btn-edit-small" style={{ padding: '10px 16px' }} onClick={() => setModoEdicao(true)}><FiEdit2 /> Editar</button>
+                      <button className="btn-cancel-small" style={{ padding: '10px', marginLeft: 'auto' }} onClick={deletarObra} title="Excluir Obra">
+                        <FiTrash2 size={18} />
+                      </button>
+                    </>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="modal-footer">
-              {modoEdicao ? (
-                <>
-                  <button className="btn-cancel" onClick={() => setModoEdicao(false)}>Cancelar</button>
-                  <button className="btn-submit-green" onClick={salvarEdicaoObra}>Salvar Alterações</button>
-                </>
-              ) : (
-                <>
-                  <button className="btn-edit-small" onClick={() => setModoEdicao(true)}><FiEdit2 /> Editar Detalhes</button>
-                  <button className="btn-trash-icon" onClick={deletarObra} title="Excluir Obra">
-                    <FiTrash2 size={20} />
-                  </button>
-                </>
-              )}
+              </div>
+
             </div>
           </div>
         </div>

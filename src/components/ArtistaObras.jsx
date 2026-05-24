@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FiGrid, FiX } from 'react-icons/fi';
-import './ArtistaObras.css'; // Criaremos um CSS específico para a galeria e modal
+import './ArtistaObras.css'; 
+import './modal.css'; 
 
 const ArtistaObras = ({ obras, nomeArtista }) => {
   const [obraSelecionada, setObraSelecionada] = useState(null);

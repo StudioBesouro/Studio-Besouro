@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'; // Importamos useEffect
+import React, { useState, useEffect } from 'react';
 import './Banner.css';
+import './modal.css'; // Conexão com o CSS compartilhado do modal
 
 const Banner = ({ noticias }) => {
   const [indexAtual, setIndexAtual] = useState(0);
@@ -18,17 +19,14 @@ const Banner = ({ noticias }) => {
 
   // --- LÓGICA DE AUTO-PLAY ---
   useEffect(() => {
-    // Só inicia o timer se houver mais de uma notícia e o modal estiver fechado
     if (noticias.length > 1 && !aberto) {
       const intervalo = setInterval(() => {
         proximaNoticia();
-      }, 5000); // 5000ms = 5 segundos
+      }, 5000); // 5 segundos
 
-      // Limpa o intervalo quando o componente desmonta ou o estado muda
       return () => clearInterval(intervalo);
     }
   }, [indexAtual, aberto, noticias.length]); 
-  // ---------------------------
 
   if (!noticiaAtual || noticias.length === 0) return null;
 
@@ -38,7 +36,6 @@ const Banner = ({ noticias }) => {
     <>
       <section className="banner-wrapper">
         <div className="banner">
-          {/* Key ajuda o React a entender a troca e permite animações de fade via CSS */}
           <img 
             key={noticiaAtual.id}
             src={noticiaAtual.imagem_url} 
@@ -80,7 +77,6 @@ const Banner = ({ noticias }) => {
               &#8250;
             </button>
 
-            {/* Indicadores Visuais (opcional, mas ajuda o usuário) */}
             <div className="banner-dots">
               {noticias.map((_, idx) => (
                 <span 
@@ -94,26 +90,45 @@ const Banner = ({ noticias }) => {
         )}
       </section>
 
-      {/* MODAL */}
+      {/* MODAL DO BANNER - AJUSTADO PARA AS REGRAS E CLASSES DO FIGMA */}
       {aberto && (
-        <div className="banner-modal" onClick={() => setAberto(false)}>
-          <div className="banner-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setAberto(false)}>×</button>
+        <div className="modal-artwork-overlay" onClick={() => setAberto(false)}>
+          <div className="modal-artwork-container modal-variacao-banner" onClick={(e) => e.stopPropagation()}>
             
-            <div className="modal-image">
-              <img src={noticiaAtual.imagem_url} alt={noticiaAtual.titulo} />
+            {/* Lado Esquerdo - Container da Imagem */}
+            <div className="modal-artwork-image-section">
+              <img 
+                src={noticiaAtual.imagem_url} 
+                alt={noticiaAtual.titulo} 
+                className="modal-artwork-image"
+              />
+              <button className="modal-artwork-close-btn" onClick={() => setAberto(false)}>✕</button>
             </div>
 
-            <div className="modal-text">
-              <span className="tag-categoria">{noticiaAtual.categoria || 'IFMA Timon'}</span>
-              <h2 className="modal-titulo">{noticiaAtual.titulo}</h2>
-              <div 
-                className="descricao-completa"
-                dangerouslySetInnerHTML={{ 
-                  __html: noticiaAtual.conteudo_completo || noticiaAtual.descricao 
-                }} 
-              />
+            {/* Lado Direito - Bloco de Conteúdo Textual */}
+            <div className="modal-artwork-info-section">
+              
+              {/* CORREÇÃO: Mudado para usar a classe .modal-meta para aplicar a pílula gradiente suave */}
+              <div className="modal-meta">
+                {noticiaAtual.categoria || 'IFMA Timon'}
+              </div>
+
+              {/* CORREÇÃO: Vinculado ao .modal-artwork-title puro para ativar o gradiente do Figma */}
+              <h2 className="modal-artwork-title">
+                {noticiaAtual.titulo}
+              </h2>
+              
+              {/* Corpo do Texto da Notícia */}
+              <div className="modal-artwork-description">
+                <div 
+                  className="descricao-completa"
+                  dangerouslySetInnerHTML={{ 
+                    __html: noticiaAtual.conteudo_completo || noticiaAtual.descricao 
+                  }} 
+                />
+              </div>
             </div>
+
           </div>
         </div>
       )}

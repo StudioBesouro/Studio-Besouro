@@ -1,39 +1,65 @@
 import React from 'react';
 import { FiX, FiImage } from 'react-icons/fi';
+import './Modal1.css'; // <--- Importa o mesmo arquivo de estilo controlado
 
 const ModalBanner = ({ isOpen, onClose, onSave, formData, setFormData, files, setFiles, loading, editingId }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay animate-in">
+    /* Adicionada a classe de escopo para aplicar o CSS do Modal1 */
+    <div className="modal-overlay escopo-modal-cadastro">
       <div className="modal-content">
         <div className="modal-header">
-          <h2>{editingId ? '✏️ Editar Banner' : '✨ Novo Banner'}</h2>
-          <button className="btn-close-modal" onClick={onClose}><FiX /></button>
+          <h3>{editingId ? '✏️ Editar Banner' : '✨ Novo Banner'}</h3>
+          <button className="btn-close" onClick={onClose}>
+            <FiX size={24} />
+          </button>
         </div>
-        <form onSubmit={onSave} className="form-new-design">
-          <div className="input-group">
-            <label>Título Principal *</label>
-            <input type="text" required value={formData.titulo} onChange={e => setFormData({...formData, titulo: e.target.value})} />
-          </div>
-          <div className="input-group">
-            <label>Descrição *</label>
-            <textarea required value={formData.descricao} onChange={e => setFormData({...formData, descricao: e.target.value})} />
-          </div>
-          <div className="input-group">
-            <label>Imagem {editingId && '(Deixe vazio para manter a atual)'}</label>
-            <div className="file-input-wrapper">
-              <label htmlFor="banner-upload" className="file-input-label">
-                <FiImage /> {files.banner ? files.banner.name : "Escolher arquivo..."}
+        
+        <form onSubmit={onSave}>
+          <div className="modal-body">
+            <div className="form-group">
+              <label>Título Principal *</label>
+              <input 
+                type="text" 
+                required 
+                value={formData.titulo} 
+                onChange={e => setFormData({...formData, titulo: e.target.value})} 
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Descrição *</label>
+              <textarea 
+                required 
+                value={formData.descricao} 
+                onChange={e => setFormData({...formData, descricao: e.target.value})} 
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Imagem {editingId && '(Deixe vazio para manter a atual)'}</label>
+              {/* Reaproveitando a estrutura visual da dropzone de arquivos do CSS */}
+              <label className="upload-dropzone">
+                <FiImage size={24} />
+                <span>{files.banner ? files.banner.name : "Clique para selecionar a imagem..."}</span>
+                <input 
+                  type="file" 
+                  className="input-file-hidden"
+                  accept="image/*" 
+                  onChange={e => setFiles({...files, banner: e.target.files[0]})} 
+                />
               </label>
-              <input id="banner-upload" type="file" accept="image/*" onChange={e => setFiles({...files, banner: e.target.files[0]})} />
             </div>
           </div>
-          <div className="modal-actions">
-            <button type="submit" className="btn-modal-save green" disabled={loading}>
+
+          <div className="modal-footer">
+            <button type="button" className="btn-cancel" onClick={onClose}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn-submit-green" disabled={loading}>
               {loading ? 'Salvando...' : editingId ? 'Salvar Alterações' : 'Cadastrar Banner'}
             </button>
-            <button type="button" className="btn-modal-cancel" onClick={onClose}>Cancelar</button>
           </div>
         </form>
       </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; 
 import { supabase } from '../lib/supabaseClient';
 import './HomeObras.css';
+import '../components/modal.css';
 
 const HomeObras = () => {
   const [obras, setObras] = useState([]);
@@ -73,7 +74,6 @@ const HomeObras = () => {
       <div className="obras-grid">
         {obrasFiltradas.map(obra => (
           <div key={obra.id} className="obra-card">
-            {/* Clique na imagem abre o modal da obra */}
             <div className="obra-imagem" onClick={() => setObraSelecionada(obra)}>
               <img src={obra.imagem} alt={obra.titulo} />
             </div>
@@ -96,37 +96,44 @@ const HomeObras = () => {
         ))}
       </div>
 
-      {/* MODAL DE DETALHES DA OBRA */}
+      {/* MODAL DE DETALHES DA OBRA - ADAPTADO EXATAMENTE PARA O MODAL.CSS */}
       {obraSelecionada && (
-        <div className="modal-overlay" onClick={() => setObraSelecionada(null)}>
-          <div className="modal-noticia" onClick={e => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setObraSelecionada(null)}>✕</button>
+        <div className="modal-artwork-overlay" onClick={() => setObraSelecionada(null)}>
+          <div className="modal-artwork-container" onClick={e => e.stopPropagation()}>
             
-            <div className="modal-inner-content">
-              <div className="modal-image-side">
-                <img src={obraSelecionada.imagem} alt={obraSelecionada.titulo} />
+            {/* Lado Esquerdo - Container da Imagem */}
+            <div className="modal-artwork-image-section">
+              <img 
+                src={obraSelecionada.imagem} 
+                alt={obraSelecionada.titulo} 
+                className="modal-artwork-image"
+              />
+              <button className="modal-artwork-close-btn" onClick={() => setObraSelecionada(null)}>✕</button>
+            </div>
+            
+            {/* Lado Direito - Caixa de Informações */}
+            <div className="modal-artwork-info-section">
+              {/* Ajustado de h1 para h2 para herdar a classe .modal-artwork-title corretamente */}
+              <h2 className="modal-artwork-title">{obraSelecionada.titulo}</h2>
+              
+              {/* Renderizado como <button> simulado por um Link para herdar a regra do artista do figma */}
+              <Link 
+                to={`/artista/${obraSelecionada.idArtista}`} 
+                style={{ display: 'block', textDecoration: 'none' }}
+              >
+                <button type="button">por {obraSelecionada.artista}</button>
+              </Link>
+
+              {/* Ajustado para a classe .modal-meta que gera o badge de pílula suave do Figma */}
+              <div className="modal-meta">
+                {obraSelecionada.categoria}
               </div>
               
-              <div className="modal-text-side">
-                <h1 className="modal-title">{obraSelecionada.titulo}</h1>
-                
-                <p className="modal-artist">
-                  por {' '}
-                  <Link 
-                    to={`/artista/${obraSelecionada.idArtista}`} 
-                    className="link-artista-modal"
-                  >
-                    {obraSelecionada.artista}
-                  </Link>
-                </p>
-
-                <span className="tag-category-modal">{obraSelecionada.categoria.toLowerCase()}</span>
-                
-                <div className="modal-description-text">
-                  <p>{obraSelecionada.descricao}</p>
-                </div>
+              <div className="modal-artwork-description">
+                <p>{obraSelecionada.descricao}</p>
               </div>
             </div>
+
           </div>
         </div>
       )}

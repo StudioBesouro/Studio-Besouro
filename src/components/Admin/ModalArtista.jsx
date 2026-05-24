@@ -1,50 +1,85 @@
 import React from 'react';
 import { FiX, FiImage } from 'react-icons/fi';
+import './Modal1.css'; // <--- Importa o mesmo arquivo de estilo controlado
 
 const ModalArtista = ({ isOpen, onClose, onSave, formData, setFormData, files, setFiles, loading }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay animate-in">
+    /* Ativada a classe de escopo para aplicar o CSS isolado do Modal1 */
+    <div className="modal-overlay escopo-modal-cadastro">
       <div className="modal-content">
         <div className="modal-header">
-          <h2 className="text-purple">🎨 Novo Artista</h2>
-          <button className="btn-close-modal" onClick={onClose}><FiX /></button>
+          <h3>🎨 Novo Artista</h3>
+          <button className="btn-close" onClick={onClose}>
+            <FiX size={24} />
+          </button>
         </div>
-        <form onSubmit={onSave} className="form-new-design purple-theme">
-          <div className="input-group">
-            <label>Nome Completo</label>
-            <input type="text" required value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} />
-          </div>
-          <div className="input-group">
-            <label>Biografia Curta</label>
-            <textarea required value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} />
-          </div>
-          <div className="file-grid-2">
-            <div className="input-group">
-              <label>Foto de Perfil</label>
-              <div className="file-input-wrapper">
-                <label htmlFor="perfil-upload" className="file-input-label">
-                  <FiImage /> {files.fotoPerfil ? files.fotoPerfil.name : "Escolher foto..."}
+        
+        <form onSubmit={onSave}>
+          <div className="modal-body">
+            <div className="form-group">
+              <label>Nome Completo</label>
+              <input 
+                type="text" 
+                required 
+                value={formData.nome} 
+                onChange={e => setFormData({...formData, nome: e.target.value})} 
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Biografia Curta</label>
+              <textarea 
+                required 
+                value={formData.bio} 
+                onChange={e => setFormData({...formData, bio: e.target.value})} 
+              />
+            </div>
+
+            {/* Container flexível para manter os dois uploads organizados lado a lado ou empilhados */}
+            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+              <div className="form-group" style={{ flex: '1', minWidth: '200px' }}>
+                <label>Foto de Perfil</label>
+                <label className="upload-dropzone">
+                  <FiImage size={24} />
+                  <span>{files.fotoPerfil ? files.fotoPerfil.name : "Escolher foto..."}</span>
+                  <input 
+                    id="perfil-upload" 
+                    type="file" 
+                    className="input-file-hidden"
+                    accept="image/*" 
+                    required 
+                    onChange={e => setFiles({...files, fotoPerfil: e.target.files[0]})} 
+                  />
                 </label>
-                <input id="perfil-upload" type="file" accept="image/*" required onChange={e => setFiles({...files, fotoPerfil: e.target.files[0]})} />
+              </div>
+
+              <div className="form-group" style={{ flex: '1', minWidth: '200px' }}>
+                <label>Banner de Fundo</label>
+                <label className="upload-dropzone">
+                  <FiImage size={24} />
+                  <span>{files.bannerArtista ? files.bannerArtista.name : "Escolher banner..."}</span>
+                  <input 
+                    id="banner-art-upload" 
+                    type="file" 
+                    className="input-file-hidden"
+                    accept="image/*" 
+                    required 
+                    onChange={e => setFiles({...files, bannerArtista: e.target.files[0]})} 
+                  />
+                </label>
               </div>
             </div>
-            <div className="input-group">
-              <label>Banner de Fundo</label>
-              <div className="file-input-wrapper">
-                <label htmlFor="banner-art-upload" className="file-input-label">
-                  <FiImage /> {files.bannerArtista ? files.bannerArtista.name : "Escolher banner..."}
-                </label>
-                <input id="banner-art-upload" type="file" accept="image/*" required onChange={e => setFiles({...files, bannerArtista: e.target.files[0]})} />
-              </div>
-            </div>
           </div>
-          <div className="modal-actions">
-            <button type="submit" className="btn-modal-save purple" disabled={loading}>
+
+          <div className="modal-footer">
+            <button type="button" className="btn-cancel" onClick={onClose}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn-submit-green" disabled={loading}>
               {loading ? 'Salvando...' : 'Cadastrar Artista'}
             </button>
-            <button type="button" className="btn-modal-cancel" onClick={onClose}>Cancelar</button>
           </div>
         </form>
       </div>

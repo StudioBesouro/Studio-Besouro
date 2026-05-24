@@ -37,7 +37,6 @@ const Artista = () => {
 
   return (
     <div className="pg-artista-publica">
-      <HeaderContato />
       <div className="hero-banner" style={{ backgroundImage: `url(${artista.banner_url})` }}>
         <button className="btn-voltar-artista" onClick={() => navigate(-1)}><FiArrowLeft /> Voltar</button>
       </div>
