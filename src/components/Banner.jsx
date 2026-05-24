@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Banner.css';
-import './modal.css'; // Conexão com o CSS compartilhado do modal
+import './Modal.css'; // Conexão com o CSS compartilhado do modal
 
 const Banner = ({ noticias }) => {
   const [indexAtual, setIndexAtual] = useState(0);
