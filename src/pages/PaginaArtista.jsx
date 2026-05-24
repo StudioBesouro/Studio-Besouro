@@ -7,7 +7,7 @@ import { useArtista } from '../hooks/useArtista';
 import ModalNovaObra from '../components/Admin/ModalNovaObra'
 
 import './PaginaArtista.css';
-import '../components/modal.css';
+import '../components/Modal.css';
 
 const PaginaArtista = () => {
   const { id } = useParams(); 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; 
 import { supabase } from '../lib/supabaseClient';
 import './HomeObras.css';
-import '../components/modal.css';
+import '../components/Modal.css';
 
 const HomeObras = () => {
   const [obras, setObras] = useState([]);
