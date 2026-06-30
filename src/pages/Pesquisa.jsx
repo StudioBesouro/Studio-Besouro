@@ -153,7 +153,6 @@ const Pesquisa = () => {
           </div>
         )}
       </main>
-      <Footer />
     </div>
   );
 };

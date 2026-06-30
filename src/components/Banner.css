@@ -3,7 +3,9 @@
   position: relative;
   width: 100%;
   max-width: 1200px;
-  margin: 32px auto;
+  
+  /* ATUALIZADO: Margem de 140px no topo para se distanciar bem do Header Fixo */
+  margin: 140px auto 32px auto; 
 }
 
 .banner {
@@ -13,6 +15,9 @@
   border-radius: 24px;
   overflow: hidden;
   transition: transform 0.3s ease;
+  
+  /* ADICIONADO: Mãozinha indicando que o bloco inteiro abre o modal */
+  cursor: pointer; 
 }
 
 .banner:hover {
@@ -76,10 +81,10 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 48px;               /* um pouco menor */
+  width: 48px;              
   height: 48px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.25);   /* ← mais transparente (era 0.4) */
+  background: rgba(0, 0, 0, 0.25);   
   color: rgba(255, 255, 255, 0.9);
   border: none;
   font-size: 28px;
@@ -90,12 +95,12 @@
   justify-content: center;
   z-index: 10;
   transition: all 0.3s ease;
-  backdrop-filter: blur(8px);        /* vidro mais suave */
+  backdrop-filter: blur(8px);        
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .banner-nav-btn:hover {
-  background: rgba(0, 0, 0, 0.5);    /* hover mais visível, mas ainda discreto */
+  background: rgba(0, 0, 0, 0.5);    
   transform: translateY(-50%) scale(1.15);
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
@@ -106,10 +111,9 @@
 
 /* Posicionamento - seta esquerda um pouco mais afastada do texto */
 .banner-nav-btn.prev {
-  left: 20px;                /* ← aumentado de 16px para 20px */
+  left: 20px;                
 }
 
 .banner-nav-btn.next {
   right: 20px;
 }
-

@@ -12,7 +12,8 @@ import { useAdminData } from '../hooks/useAdminData';
 import './Admin.css';
 
 const Admin = () => {
-  const { banners, artistas, stats, loading, setLoading, fetchData, uploadFile } = useAdminData();
+  // Ignoramos o uploadFile original do hook para garantir a injeção do contentType manualmente aqui
+  const { banners, artistas, stats, loading, setLoading, fetchData } = useAdminData();
   const navigate = useNavigate(); 
   
   const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
@@ -23,6 +24,25 @@ const Admin = () => {
   const [files, setFiles] = useState({ banner: null, fotoPerfil: null, bannerArtista: null });
 
   useEffect(() => { fetchData(); }, []);
+
+  // Função local de upload para garantir que mídias do celular (Vídeos/PDFs/Imagens) mantenham seus formatos nativos
+  const localUploadFile = async (file, bucket) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
+    const filePath = `public/${fileName}`;
+
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file, {
+        contentType: file.type, // <-- Avisa perfeitamente o Supabase qual é o tipo de arquivo
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    return publicUrl;
+  };
 
   const openEditBannerModal = (banner) => {
     setEditingBannerId(banner.id_banner);
@@ -42,7 +62,7 @@ const Admin = () => {
     setLoading(true);
     try {
       let url = banners.find(b => b.id_banner === editingBannerId)?.imagem_url;
-      if (files.banner) url = await uploadFile(files.banner, 'banners');
+      if (files.banner) url = await localUploadFile(files.banner, 'banners');
       const payload = { titulo: formData.titulo, descricao: formData.descricao, imagem_url: url };
       if (editingBannerId) {
         await supabase.from('banner').update(payload).eq('id_banner', editingBannerId);
@@ -60,8 +80,8 @@ const Admin = () => {
     if (!files.fotoPerfil || !files.bannerArtista) return alert("Selecione as imagens.");
     setLoading(true);
     try {
-      const fotoUrl = await uploadFile(files.fotoPerfil, 'artistas');
-      const bannerUrl = await uploadFile(files.bannerArtista, 'artistas');
+      const fotoUrl = await localUploadFile(files.fotoPerfil, 'artistas');
+      const bannerUrl = await localUploadFile(files.bannerArtista, 'artistas');
       await supabase.from('perfil_artista').insert({ nome: formData.nome, bio: formData.bio, foto_perfil_url: fotoUrl, banner_url: bannerUrl });
       setFormData({ ...formData, nome: '', bio: '' });
       setIsArtistaModalOpen(false);
@@ -131,7 +151,7 @@ const Admin = () => {
           </div>
         </section>
 
-        {/* SEÇÃO DE ARTISTAS - CORRIGIDA E ÚNICA */}
+        {/* SEÇÃO DE ARTISTAS */}
         <section className="admin-section">
           <div className="section-header">
             <h2>Artistas</h2>
@@ -149,7 +169,6 @@ const Admin = () => {
                 <div className="item-info">
                   <h3>{a.nome}</h3>
                   <div className="card-actions">
-                    {/* Link correto para GESTÃO */}
                     <Link to={`/paginaartista/${a.id_artista}`} className="btn-manage">
                       Obras <FiChevronRight />
                     </Link>

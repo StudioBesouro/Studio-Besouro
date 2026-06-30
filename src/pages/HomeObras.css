@@ -136,3 +136,88 @@
   top: 12px;
   right: 12px;
 }
+/* ========================================================
+   ESTILOS COMPLEMENTARES PARA VÍDEOS E PDFs (MÍDIA DO ADM)
+   ======================================================== */
+
+.card-media-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none; /* Garante que o clique abra o modal em vez de pausar o vídeo no card */
+}
+
+.modal-artwork-media-element {
+  width: 100%;
+  height: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 20px 0 0 20px;
+}
+
+/* Container de placeholder elegante para PDFs na listagem principal */
+.pdf-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #b45309;
+  min-height: 250px;
+}
+
+.pdf-icon {
+  font-size: 3.5rem;
+  margin-bottom: 10px;
+}
+
+.pdf-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+/* Botão de ação para baixar ou ler o PDF fora do frame */
+.btn-download-pdf {
+  display: block;
+  text-align: center;
+  background-color: #76bc21;
+  color: white;
+  text-decoration: none;
+  padding: 14px;
+  font-weight: bold;
+  border-radius: 0 0 0 20px;
+  transition: background 0.2s ease;
+}
+
+.btn-download-pdf:hover {
+  background-color: #619a1a;
+}
+
+/* Botão de link do Artista interno do Modal */
+.btn-artista-modal {
+  background: none;
+  border: 1px solid #9333ea;
+  color: #9333ea;
+  padding: 6px 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 15px;
+  transition: all 0.2s ease;
+}
+
+.btn-artista-modal:hover {
+  background: #9333ea;
+  color: white;
+}
+.home-obras-section {
+  /* Adiciona um espaço no topo de 100px a 120px para o Header fixo flutuar sem cobrir nada */
+  padding-top: 110px; 
+  
+  /* Mantém as suas estilizações existentes abaixo (exemplo) */
+  padding-left: 20px;
+  padding-right: 20px;
+}

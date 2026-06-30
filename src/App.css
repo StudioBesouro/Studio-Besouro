@@ -1,22 +1,36 @@
 /* src/App.css */
 
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  
+  /* REMOVIDO: height: auto e overflow-y: auto daqui para não quebrar o JS */
+  overflow-x: hidden; 
+
+  /* ADICIONADO: Ativa a rolagem suave nativa para todo o site! */
+  scroll-behavior: smooth; 
+  
+  background-color: #fdfdf5; /* Cor padrão de fundo do seu site */
+}
+
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-/* ESTA É A REGRA QUE FALTA */
-.main-header {
-  flex-shrink: 0; /* Impede o header de ser esmagado pelo flexbox */
   width: 100%;
-  position: sticky; /* Opcional: faz o header fixar no topo ao rolar */
-  top: 0;
-  z-index: 1000;
 }
 
+.main-header {
+  flex-shrink: 0;
+}
+
+/* Sem nenhum padding global para impedir linhas brancas em outras páginas */
 .main-content-wrapper {
-  flex: 1 0 auto; /* Garante que o conteúdo cresça e empurre o footer */
+  flex: 1 0 auto; 
   display: flex;
   flex-direction: column;
+  width: 100%;
+  padding-top: 0px; 
 }

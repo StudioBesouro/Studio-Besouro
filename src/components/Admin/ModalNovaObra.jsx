@@ -59,7 +59,8 @@ const ModalNovaObra = ({ show, onBlur, onSubmit, novaObra, setNovaObra, uploadin
                 <input 
                   type="file" 
                   className="input-file-hidden" 
-                  accept="image/*,video/*" 
+                  /* MODIFICADO: Agora aceita imagens, vídeos do celular (.mp4, .mov) e arquivos .pdf */
+                  accept="image/*,video/*,application/pdf" 
                   required 
                   onChange={e => setNovaObra({...novaObra, arquivo: e.target.files[0]})} 
                 />

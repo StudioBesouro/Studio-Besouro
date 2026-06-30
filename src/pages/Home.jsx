@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import Banner from '../components/Banner';
 import HomeObras from './HomeObras'; 
-// Removi o import do Footer daqui, pois ele já está no App.js
 import './Home.css';
 
-const Home = () => {
+// Recebe "pesquisaTermo" enviado pelo Header através do componente pai (App.jsx)
+const Home = ({ pesquisaTermo = "" }) => {
   const [banners, setBanners] = useState([]);
 
   useEffect(() => {
@@ -38,12 +38,9 @@ const Home = () => {
 
       {/* 2. Conteúdo principal: obras e artistas */}
       <main className="main-layout">
-        <HomeObras />
+        {/* Passamos o termo que veio lá do Header para dentro do HomeObras filtrar */}
+        <HomeObras buscaTermoExterno={pesquisaTermo} />
       </main>
-
-      {/* O Footer foi removido daqui porque o App.js já cuida dele. 
-         Isso evita erros de "duplicate component" e erro 500.
-      */}
     </div>
   );
 };

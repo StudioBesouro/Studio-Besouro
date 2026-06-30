@@ -27,8 +27,17 @@ export const useAdminData = () => {
   const uploadFile = async (file, bucket) => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const { error } = await supabase.storage.from(bucket).upload(fileName, file);
+    
+    // MODIFICADO: Agora injetamos o 'contentType: file.type' para o Supabase salvar a mídias corretamente
+    const { error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, {
+        contentType: file.type, // <-- CRUCIAL: Identifica se é video/mp4, video/quicktime (.mov) ou application/pdf
+        upsert: true
+      });
+      
     if (error) throw error;
+    
     const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
     return data.publicUrl;
   };

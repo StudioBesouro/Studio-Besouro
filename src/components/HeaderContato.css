@@ -90,3 +90,18 @@
     padding: 10px;
   }
 }
+.header-contato {
+  position: absolute; /* Nasce no topo da página e fica lá quando você rola */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  background-color: #fdfdf5;
+  box-sizing: border-box;
+  border-bottom: 2px solid #d4ed91;
+  z-index: 1500;
+}

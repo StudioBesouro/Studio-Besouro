@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabaseClient";
 import { FiPlus, FiArrowLeft, FiCamera, FiEdit2, FiCheck, FiX, FiImage, FiTrash2 } from 'react-icons/fi'; 
 
 import { useArtista } from '../hooks/useArtista';
-import ModalNovaObra from '../components/Admin/ModalNovaObra'
+import ModalNovaObra from '../components/Admin/ModalNovaObra';
 
 import './PaginaArtista.css';
 import '../components/Modal.css';
@@ -30,6 +30,75 @@ const PaginaArtista = () => {
   const mapaCategorias = { 'Desenho': 1, 'Pintura': 2, 'Música': 3, 'Literatura': 4, 'Fotografia': 5, 'Escultura': 6 };
   const mapaCategoriasInverso = Object.fromEntries(Object.entries(mapaCategorias).map(([k, v]) => [v, k]));
 
+  const identificarTipoMidia = (url) => {
+    if (!url) return 'imagem';
+    const urlLower = url.toLowerCase();
+    if (urlLower.includes('.pdf') || urlLower.split('?')[0].endsWith('.pdf')) return 'pdf';
+    if (
+      urlLower.includes('.mp4') || 
+      urlLower.includes('.mov') || 
+      urlLower.includes('.webm') || 
+      urlLower.includes('.ogg') ||
+      urlLower.split('?')[0].match(/\.(mp4|mov|webm|ogg)$/)
+    ) return 'video';
+    return 'imagem';
+  };
+// RENDERIZADOR ATUALIZADO: Remove barras pretas de ferramentas e abre em tela cheia ao clicar no modal
+  const renderizarMidia = (url, titulo, emModal = false) => {
+    const tipo = identificarTipoMidia(url);
+
+    if (tipo === 'video') {
+      return (
+        <video 
+          src={url} 
+          controls={emModal}
+          autoPlay={!emModal}
+          muted={true}
+          loop={true}
+          playsInline={true}
+          style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
+        />
+      );
+    }
+
+    if (tipo === 'pdf') {
+      // Força o navegador a esconder a barra de ferramentas (#toolbar=0) e painéis (#navpanes=0)
+      const urlLimpaDoPdf = `${url}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
+
+      if (emModal) {
+        return (
+          <div 
+            onClick={() => window.open(url, '_blank')} 
+            style={{ width: '100%', height: '100%', minHeight: '450px', cursor: 'zoom-in', position: 'relative' }}
+            title="Clique para abrir em tela cheia"
+          >
+            {/* Camada invisível protetora: captura o clique na tela para abrir o PDF expandido e impede interações com a barra nativa */}
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10 }} />
+            
+            <iframe 
+              src={urlLimpaDoPdf} 
+              title={titulo} 
+              style={{ width: '100%', height: '100%', minHeight: '450px', border: 'none', background: '#fff', display: 'block' }} 
+            />
+          </div>
+        );
+      }
+      
+      // Na listagem (Capa): Mostra a primeira página do PDF estática e limpa
+      return (
+        <div style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', pointerEvents: 'none' }}>
+          <iframe 
+            src={`${url}#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH`} 
+            title={titulo} 
+            style={{ width: '100%', height: '120%', border: 'none', transform: 'scale(1.02)', transformOrigin: 'top left' }} 
+          />
+        </div>
+      );
+    }
+
+    return <img src={url} alt={titulo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />;
+  };
+
   const handleSelectFile = async (e, tipo) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -41,7 +110,10 @@ const PaginaArtista = () => {
 
       const { error: uploadError } = await supabase.storage
         .from('artistas')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, file, { 
+          contentType: file.type,
+          upsert: true 
+        });
 
       if (uploadError) throw uploadError;
 
@@ -57,7 +129,7 @@ const PaginaArtista = () => {
       if (updateError) throw updateError;
 
       setArtista(prev => ({ ...prev, [tipo]: `${publicUrl}?t=${Date.now()}` }));
-      alert("Imagem updated successfully!");
+      alert("Imagem atualizada com sucesso!");
     } catch (error) {
       alert("Erro ao enviar imagem: " + error.message);
     } finally {
@@ -171,7 +243,9 @@ const PaginaArtista = () => {
         <div className="grid-obras-clean">
           {artista?.obras?.map(obra => (
             <div key={obra.id_obra} className="card-obra-minimal clickable" onClick={() => abrirDetalhes(obra)}>
-              <div className="img-container"><img src={obra.imagem_url} alt={obra.titulo} /></div>
+              <div className="img-container">
+                {renderizarMidia(obra.imagem_url, obra.titulo, false)}
+              </div>
               <div className="info-obra-bottom"><h3>{obra.titulo}</h3></div>
             </div>
           ))}
@@ -184,19 +258,27 @@ const PaginaArtista = () => {
             e.preventDefault();
             setUploading(true);
             try {
-              const fileName = `obra_${id}_${Date.now()}`;
-              await supabase.storage.from('obras').upload(fileName, novaObra.arquivo);
+              const fileExt = novaObra.arquivo.name.split('.').pop();
+              const fileName = `obra_${id}_${Date.now()}.${fileExt}`;
+              
+              await supabase.storage.from('obras').upload(fileName, novaObra.arquivo, {
+                contentType: novaObra.arquivo.type,
+                upsert: true
+              });
+
               const { data: { publicUrl } } = supabase.storage.from('obras').getPublicUrl(fileName);
               await supabase.from('obras').insert([{ id_artista: id, id_categoria: mapaCategorias[novaObra.categoria], titulo: novaObra.titulo, descricao: novaObra.descricao, imagem_url: publicUrl }]);
+              
               buscarDados();
               setShowModalNova(false);
               setNovaObra({ titulo: "", descricao: "", categoria: "Desenho", arquivo: null });
+              alert("Obra publicada com sucesso!");
             } catch (e) { alert(e.message); } finally { setUploading(false); }
         }}
         novaObra={novaObra} setNovaObra={setNovaObra} uploading={uploading} categoriasLista={categoriasLista}
       />
       
-      {/* MODAL AJUSTADO PARA DUAS COLUNAS ASYNC COM O MODAL.CSS */}
+      {/* MODAL MULTIMÍDIA OTIMIZADO */}
       {showModalDetalhe && obraSelecionada && (
         <div className="modal-overlay" onClick={() => { setShowModalDetalhe(false); setModoEdicao(false); }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -206,9 +288,9 @@ const PaginaArtista = () => {
             </button>
 
             <div className="modal-body">
-              {/* Coluna da Imagem */}
-              <div className="modal-image-container">
-                <img src={obraSelecionada.imagem_url} alt={obraSelecionada.titulo} />
+              {/* Coluna da Mídia */}
+              <div className="modal-image-container" style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'stretch', justifyContent: 'center', background: '#000' }}>
+                {renderizarMidia(obraSelecionada.imagem_url, obraSelecionada.titulo, true)}
               </div>
 
               {/* Coluna de Informações / Form de Edição */}
@@ -234,7 +316,7 @@ const PaginaArtista = () => {
                   </div>
                 )}
 
-                {/* Rodapé Interno do Painel de Informações */}
+                {/* Rodapé Interno do Painel */}
                 <div style={{ marginTop: 'auto', paddingTop: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                   {modoEdicao ? (
                     <>

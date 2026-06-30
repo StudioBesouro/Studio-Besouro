@@ -35,7 +35,8 @@ const Banner = ({ noticias }) => {
   return (
     <>
       <section className="banner-wrapper">
-        <div className="banner">
+        {/* ATUALIZADO: O clique agora engloba toda a div do banner */}
+        <div className="banner" onClick={() => setAberto(true)}>
           <img 
             key={noticiaAtual.id}
             src={noticiaAtual.imagem_url} 
@@ -46,10 +47,7 @@ const Banner = ({ noticias }) => {
           <div className="banner-overlay">
             <h2 className="banner-pre-titulo">Principais notícias do IFMA-Campus Timon</h2>
             <p className="banner-titulo">{noticiaAtual.titulo}</p>
-            <button 
-              className="btn-ler-mais" 
-              onClick={() => setAberto(true)}
-            >
+            <button className="btn-ler-mais">
               Clique para ler mais →
             </button>
           </div>
@@ -57,6 +55,7 @@ const Banner = ({ noticias }) => {
 
         {temMaisDeUma && (
           <>
+            {/* O e.stopPropagation() impede que a ação de avançar/voltar também abra o modal */}
             <button 
               className="banner-nav-btn prev" 
               onClick={(e) => {
@@ -82,7 +81,10 @@ const Banner = ({ noticias }) => {
                 <span 
                   key={idx} 
                   className={`dot ${idx === indexAtual ? 'active' : ''}`}
-                  onClick={() => setIndexAtual(idx)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Evita abrir o modal ao alternar pelos dots
+                    setIndexAtual(idx);
+                  }}
                 />
               ))}
             </div>
@@ -108,12 +110,10 @@ const Banner = ({ noticias }) => {
             {/* Lado Direito - Bloco de Conteúdo Textual */}
             <div className="modal-artwork-info-section">
               
-              {/* CORREÇÃO: Mudado para usar a classe .modal-meta para aplicar a pílula gradiente suave */}
               <div className="modal-meta">
                 {noticiaAtual.categoria || 'IFMA Timon'}
               </div>
 
-              {/* CORREÇÃO: Vinculado ao .modal-artwork-title puro para ativar o gradiente do Figma */}
               <h2 className="modal-artwork-title">
                 {noticiaAtual.titulo}
               </h2>

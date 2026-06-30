@@ -41,7 +41,6 @@ const Contato = () => {
     .then(() => {
       setSuccess(true);
       setFormData({ nome: "", email: "", assunto: "", mensagem: "" });
-      // Removi o alert() comum para usar a mensagem personalizada no HTML
     })
     .catch((error) => {
       console.error("Erro:", error);
@@ -94,6 +93,8 @@ const Contato = () => {
                   <label>Tipo de assunto</label>
                   <select name="assunto" value={formData.assunto} onChange={handleChange} required>
                     <option value="">Selecione uma opção</option>
+                    {/* ADICIONADO: Nova opção para os artistas do Studio Besouro */}
+                    <option value="Participar do projeto como artista">Participar do projeto como artista</option>
                     <option value="Dúvida">Dúvida</option>
                     <option value="Sugestão">Sugestão</option>
                     <option value="Problema Técnico">Problema Técnico</option>

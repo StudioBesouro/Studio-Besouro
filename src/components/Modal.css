@@ -238,3 +238,7 @@
     display: block;
   }
 }
+.modal-artwork-overlay, .modal-overlay {
+  position: fixed;
+  z-index: 99999; /* Ganha do 999 do header com folga! */
+}
