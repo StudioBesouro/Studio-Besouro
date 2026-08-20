@@ -1,0 +1,10 @@
+.convite-faixa {
+  margin: 24px auto; max-width: 900px; width: calc(100% - 40px);
+  padding: 18px 28px; border-radius: 14px;
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(90deg, #84cc16, #a78bfa) border-box;
+  text-align: center;
+}
+.convite-faixa p { margin: 0; font-size: 1rem; color: #374151; }
+.convite-faixa strong { color: #65a30d; }

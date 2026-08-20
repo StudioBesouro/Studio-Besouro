@@ -1,0 +1,13 @@
+.back-to-top {
+  position: fixed; bottom: 32px; right: 32px; z-index: 3000;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: linear-gradient(135deg, #84cc16, #65a30d);
+  color: white; border: none; width: 56px; height: 56px;
+  border-radius: 50%; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(132,204,22,0.45);
+  font-size: 1.3rem; transition: transform 0.2s, box-shadow 0.2s;
+  animation: fadeInUp 0.25s ease;
+}
+.back-to-top span { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; }
+.back-to-top:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 10px 28px rgba(132,204,22,0.55); }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }

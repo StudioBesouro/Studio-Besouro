@@ -1,0 +1,9 @@
+.pg-artista-publica .titulo-galeria {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ADICIONADO: Centraliza o ícone e o texto horizontalmente */
+  gap: 12px;
+  font-size: 1.8rem;
+  color: #2d3748;
+  margin-bottom: 40px;
+}

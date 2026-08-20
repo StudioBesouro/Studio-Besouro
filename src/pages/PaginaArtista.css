@@ -1,0 +1,368 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   ESTILO COMPLETO: PAINEL DO ARTISTA (BOTÃO FLUTUANDO SOBRE O BANNER)
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Paleta de Cores Principais */
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --primary-light: #f5f3ff;
+  --primary-focus: rgba(124, 58, 237, 0.15);
+  
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-light: #ecfdf5;
+  
+  --danger: #ef4444;
+  --danger-light: #fef2f2;
+  
+  /* Cores Neutras de Fundo e Texto */
+  --bg-main: #ffffff;
+  --bg-neutral: #f8fafc;
+  --text-main: #1e293b;
+  --text-muted: #4a5568;
+  
+  /* Bordas e Sombras */
+  --border-color: #f1f5f9;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1. RESET, REMOÇÃO DE HEADER GLOBAL E POSICIONAMENTO DO BOTÃO
+   ────────────────────────────────────────────────────────────────────────── */
+.perfil-container.page-no-header {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+/* MODIFICADO: Removeu o fundo branco e agora flutua por cima do banner */
+.topo-navegacao {
+  position: absolute;
+  top: 25px;
+  left: 5%;
+  z-index: 10; /* Garante que fica acima do overlay do banner */
+  padding: 0;
+  background: transparent;
+}
+
+/* BOTÃO VOLTAR: Estilo pílula flutuando em cima da imagem de capa */
+.btn-voltar-simples {
+  background: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #333333;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.btn-voltar-simples:hover {
+  transform: translateX(-5px);
+  background: #f0f0f0;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   2. BANNER EDITÁVEL NO HOVER
+   ────────────────────────────────────────────────────────────────────────── */
+.perfil-header-visual {
+  width: 100%;
+  height: 320px;
+  position: relative;
+  margin-bottom: 90px;
+}
+
+.banner-fundo-novo.editavel {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  background-color: #f3f4f6;
+  position: relative;
+  cursor: pointer;
+}
+
+.overlay-alterar-banner {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.banner-fundo-novo.editavel:hover .overlay-alterar-banner {
+  opacity: 1;
+}
+
+.input-file-hidden {
+  display: none;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   3. FOTO DE PERFIL CENTRALIZADA E TÍTULOS
+   ────────────────────────────────────────────────────────────────────────── */
+.foto-perfil-central {
+  position: relative;
+  bottom: -60px;
+  width: 160px;
+  height: 160px;
+  z-index: 2;
+}
+
+.foto-perfil-central img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid #ffffff;
+  object-fit: cover;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.icon-camera-overlay.clickable {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  background: var(--success);
+  color: #ffffff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.icon-camera-overlay.clickable:hover {
+  transform: scale(1.1);
+  background-color: var(--success-hover);
+}
+
+.artista-intro {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 35px;
+}
+
+.titulo-artista-limpo {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--text-main);
+  letter-spacing: -1.5px;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   4. FORMULÁRIO E DESCRIÇÃO EDITÁVEL
+   ────────────────────────────────────────────────────────────────────────── */
+.info-artista-form {
+  max-width: 850px;
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.label-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.campo-exibicao label {
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.textarea-fake, .textarea-edit {
+  padding: 16px 24px;
+  background: #ffffff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.textarea-fake {
+  min-height: 120px;
+}
+
+.textarea-edit {
+  width: 100%;
+  min-height: 120px;
+  border-color: var(--primary);
+  font-family: inherit;
+  outline: none;
+  box-shadow: 0 0 0 4px var(--primary-focus);
+  resize: vertical;
+}
+
+/* Botões de Edição Inline */
+.btn-edit-small, .btn-save-small, .btn-cancel-small {
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-edit-small { color: var(--primary); background: var(--primary-light); }
+.btn-edit-small:hover { background: #ede9fe; }
+
+.edit-actions { display: flex; gap: 8px; }
+
+.btn-save-small { color: var(--success); background: var(--success-light); }
+.btn-save-small:hover { background: #d1fae5; }
+
+.btn-cancel-small { color: var(--danger); background: var(--danger-light); }
+.btn-cancel-small:hover { background: #fee2e2; }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   5. SEÇÃO DE ARTE E OBRAS (GRID)
+   ────────────────────────────────────────────────────────────────────────── */
+.secao-obras-v2 {
+  max-width: 1100px;
+  width: 90%;
+  margin: 80px auto;
+}
+
+.header-obras-v2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 20px;
+}
+
+.header-obras-v2 h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.btn-adicionar-verde {
+  background-color: var(--success);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-adicionar-verde:hover {
+  background-color: var(--success-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+}
+
+/* Grid de Exibição das Artes */
+.grid-obras-clean {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 35px;
+}
+
+.card-obra-minimal {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
+}
+
+.card-obra-minimal:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.08);
+}
+
+.img-container {
+  width: 100%;
+  height: 280px;
+  background-color: var(--bg-neutral);
+  overflow: hidden;
+}
+
+.img-container img, 
+.img-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.card-obra-minimal:hover .img-container img {
+  transform: scale(1.03);
+}
+
+.info-obra-bottom {
+  padding: 20px;
+  text-align: center;
+}
+
+.info-obra-bottom h3 {
+  font-size: 1.15rem;
+  color: var(--text-main);
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   6. ESTADOS GLOBAIS DE SISTEMA
+   ────────────────────────────────────────────────────────────────────────── */
+.loading-state, .error-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+.error-state {
+  color: var(--danger);
+}

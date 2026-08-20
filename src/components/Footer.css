@@ -1,0 +1,45 @@
+.main-footer {
+  width: 100%;
+  padding: 30px 20px; /* Aumentado para melhor respiro */
+  background-color: transparent; /* Fundamental para ver o degradê do fundo */
+  border-top: 1px solid rgba(212, 237, 145, 0.4); /* Borda sutil */
+  margin-top: auto; /* Empurra para o fim em layouts flex */
+  box-sizing: border-box;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; 
+}
+
+.footer-logo-container {
+  display: flex;
+  align-items: center; 
+  gap: 12px;
+}
+
+.footer-logo {
+  width: 45px; 
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.footer-text {
+  font-family: 'Adigiana Toybox', cursive;
+  font-size: 1.4rem; 
+  /* Gradiente no texto igual ao do Header */
+  background: linear-gradient(90deg, #84cc16 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-copyright {
+  font-family: sans-serif;
+  font-size: 0.75rem; 
+  color: #94a3b8; /* Cinza azulado para suavizar no fundo claro */
+  margin-top: 5px;
+  letter-spacing: 0.5px;
+}

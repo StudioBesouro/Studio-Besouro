@@ -1,0 +1,115 @@
+/* --- CONTAINER E GRID --- */
+.home-content {
+  width: 100%;
+  background: linear-gradient(135deg, #ffeb9b 0%, #f7fee7 50%, #faf5ff 100%);
+  min-height: 100vh;
+  background-attachment: fixed;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Em vez de usar !important, usamos o pai (.home-content) para dar força ao seletor */
+.home-content .grid-artes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  padding: 40px 5% 100px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* --- BARRA DE CATEGORIAS --- */
+.home-content .nav-categories {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px 20px;
+  flex-wrap: wrap;
+}
+
+/* ESTILO DAS PILLS (BOTÕES) */
+.home-content .category-pill {
+  all: unset; 
+  padding: 10px 25px;
+  border-radius: 50px;
+  border: 1px solid #d4ed91;
+  background-color: #ffffff;
+  color: #65a30d;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-content .category-pill.active {
+  background-color: #84cc16;
+  color: #ffffff;
+  border-color: #84cc16;
+  box-shadow: 0 4px 15px rgba(132, 204, 22, 0.4);
+}
+
+.home-content .category-pill:hover:not(.active) {
+  background-color: #f7fee7;
+  transform: translateY(-2px);
+}
+
+/* --- CARD DE OBRA --- */
+.home-content .card-arte {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  text-align: left;
+}
+
+.home-content .card-arte:hover {
+  transform: translateY(-10px);
+}
+
+.home-content .card-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.home-content .card-body {
+  padding: 20px;
+}
+
+/* Aqui evitamos conflito com o título do artista */
+.home-content .obra-titulo {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 5px;
+}
+
+/* --- ESTILOS DO GRID SECUNDÁRIO --- */
+.home-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.obras-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 32px;
+}
+
+.obra-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: all 0.25s ease;
+}
+
+.obra-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
