@@ -75,7 +75,7 @@ const Admin = () => {
     fetchData();
   }, []);
 
-  // Upload local garantindo content-type correto para vídeos, imagens e PDFs
+  // Upload local garantindo content-type correto
   const localUploadFile = async (file, bucket) => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
@@ -123,18 +123,21 @@ const Admin = () => {
         titulo: formData.titulo,
         descricao: formData.descricao,
         imagem_url: url,
-        duracao_dias: Number(formData.duracao_dias) || 0
+        duracao_dias: Number(formData.duracao_dias) || 0,
+        ativo: true // Força o estado ativo para aparecer imediatamente
       };
 
       if (editingBannerId) {
-        await supabase.from('banner').update(payload).eq('id_banner', editingBannerId);
+        const { error } = await supabase.from('banner').update(payload).eq('id_banner', editingBannerId);
+        if (error) throw error;
       } else {
-        if (!files.banner) throw new Error("Selecione uma imagem.");
-        await supabase.from('banner').insert([payload]);
+        if (!files.banner) throw new Error("Selecione uma imagem para o banner.");
+        const { error } = await supabase.from('banner').insert([payload]).select();
+        if (error) throw error;
       }
 
       closeBannerModal();
-      fetchData();
+      await fetchData(); // Recarrega a lista do banco
     } catch (err) {
       alert(err.message);
     } finally {
@@ -150,16 +153,20 @@ const Admin = () => {
       const fotoUrl = await localUploadFile(files.fotoPerfil, 'artistas');
       const bannerUrl = await localUploadFile(files.bannerArtista, 'artistas');
 
-      await supabase.from('perfil_artista').insert({
+      const { error } = await supabase.from('perfil_artista').insert([{
         nome: formData.nome,
         bio: formData.bio,
         foto_perfil_url: fotoUrl,
-        banner_url: bannerUrl
-      });
+        banner_url: bannerUrl,
+        ativo: true
+      }]).select();
+
+      if (error) throw error;
 
       setFormData(prev => ({ ...prev, nome: '', bio: '' }));
+      setFiles(prev => ({ ...prev, fotoPerfil: null, bannerArtista: null }));
       setIsArtistaModalOpen(false);
-      fetchData();
+      await fetchData();
     } catch (err) {
       alert(err.message);
     } finally {
@@ -167,7 +174,6 @@ const Admin = () => {
     }
   };
 
-  // Alterna o status ativo do banner
   const toggleBanner = async (banner) => {
     const { error } = await supabase
       .from('banner')
@@ -178,7 +184,6 @@ const Admin = () => {
     else alert('Erro ao alterar status. Verifique se a coluna "ativo" existe na tabela "banner".');
   };
 
-  // Alterna o status ativo do artista
   const toggleArtista = async (artista) => {
     const { error } = await supabase
       .from('perfil_artista')
@@ -194,7 +199,6 @@ const Admin = () => {
       <HeaderContato />
 
       <main className="admin-dashboard">
-        {/* CARDS DE ESTATÍSTICAS */}
         <div className="stats-grid">
           <div className="stat-card green clickable-stat" onClick={() => navigate('/pesquisa/banner')}>
             <div>
@@ -221,7 +225,6 @@ const Admin = () => {
           </div>
         </div>
 
-        {/* SEÇÃO DE BANNERS */}
         <section className="admin-section">
           <div className="section-header">
             <div>
@@ -268,7 +271,6 @@ const Admin = () => {
           )}
         </section>
 
-        {/* SEÇÃO DE ARTISTAS */}
         <section className="admin-section">
           <div className="section-header">
             <div>

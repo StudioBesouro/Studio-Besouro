@@ -4,8 +4,21 @@
   width: 100%;
   max-width: 1200px;
   
-  /* ATUALIZADO: Margem de 140px no topo para se distanciar bem do Header Fixo */
-  margin: 140px auto 32px auto; 
+  /* Reduzido de 140px para 80px no topo para subir todo o bloco */
+  margin: 80px auto 32px auto; 
+}
+
+/* LINHA VERDE NO TOPO */
+.banner-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 1%;
+  width: 98%;
+  height: 3px;
+  background-color: #78c211;
+  border-radius: 80px;
+  z-index: 15;
 }
 
 .banner {
@@ -15,8 +28,6 @@
   border-radius: 24px;
   overflow: hidden;
   transition: transform 0.3s ease;
-  
-  /* ADICIONADO: Mãozinha indicando que o bloco inteiro abre o modal */
   cursor: pointer; 
 }
 
@@ -76,15 +87,15 @@
   background: rgba(255, 255, 255, 0.4);
 }
 
-/* Botões de navegação - MAIS TRANSPARENTES e menos intrusivos */
+/* --- BOTÕES DE NAVEGAÇÃO --- */
 .banner-nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 48px;              
+  width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.25);   
+  background: rgba(0, 0, 0, 0.25);
   color: rgba(255, 255, 255, 0.9);
   border: none;
   font-size: 28px;
@@ -95,25 +106,73 @@
   justify-content: center;
   z-index: 10;
   transition: all 0.3s ease;
-  backdrop-filter: blur(8px);        
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .banner-nav-btn:hover {
-  background: rgba(0, 0, 0, 0.5);    
+  background: rgba(0, 0, 0, 0.5);
   transform: translateY(-50%) scale(1.15);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .banner-nav-btn:active {
   transform: translateY(-50%) scale(0.92);
 }
 
-/* Posicionamento - seta esquerda um pouco mais afastada do texto */
 .banner-nav-btn.prev {
-  left: 20px;                
+  left: 20px;
 }
 
 .banner-nav-btn.next {
   right: 20px;
+}
+
+/* --- ELEMENTO ANIMADO: BESOURO PIXEL --- */
+.besouro-pixel {
+  position: absolute;
+  top: -50px; 
+  left: 0;
+
+  width: 65px; 
+  height: 65px;
+
+  background-image: url('../assets/besouro-pixel.png');
+  background-repeat: no-repeat;
+  background-size: 780px 65px;
+
+  image-rendering: pixelated;
+  z-index: 20;
+  pointer-events: none;
+
+  animation:
+    andarBesouro 1.2s steps(12) infinite,
+    moverBesouro 12s ease-in-out infinite;
+}
+
+@keyframes andarBesouro {
+  from {
+    background-position: 0px 0;
+  }
+  to {
+    background-position: -780px 0;
+  }
+}
+
+@keyframes moverBesouro {
+  0% {
+    left: 0;
+    transform: scaleX(1);
+  }
+  50% {
+    left: calc(100% - 65px);
+    transform: scaleX(1);
+  }
+  50.1% {
+    transform: scaleX(-1);
+  }
+  100% {
+    left: 0;
+    transform: scaleX(-1);
+  }
 }

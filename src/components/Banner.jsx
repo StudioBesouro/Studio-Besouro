@@ -1,58 +1,155 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Banner.css';
 import './Modal.css';
 
-export default function Banner({ noticias }) {
+
+const Banner = ({ noticias }) => {
   const [indexAtual, setIndexAtual] = useState(0);
   const [aberto, setAberto] = useState(false);
-  const noticia = noticias[indexAtual];
-  const proxima = () => setIndexAtual(p => (p + 1) % noticias.length);
-  const anterior = () => setIndexAtual(p => (p - 1 + noticias.length) % noticias.length);
+
+  const noticiaAtual = noticias[indexAtual];
+
+  const proximaNoticia = () => {
+    setIndexAtual((prev) => (prev + 1) % noticias.length);
+  };
+
+  const anteriorNoticia = () => {
+    setIndexAtual((prev) => (prev - 1 + noticias.length) % noticias.length);
+  };
 
   useEffect(() => {
     if (noticias.length > 1 && !aberto) {
-      const t = setInterval(proxima, 5000);
-      return () => clearInterval(t);
+      const intervalo = setInterval(() => {
+        proximaNoticia();
+      }, 5000);
+
+      return () => clearInterval(intervalo);
     }
   }, [indexAtual, aberto, noticias.length]);
 
-  if (!noticia || !noticias.length) return null;
+  if (!noticiaAtual || noticias.length === 0) return null;
+
+  const temMaisDeUma = noticias.length > 1;
+
   return (
     <>
       <section className="banner-wrapper">
-        <div className="banner" onClick={() => setAberto(true)}>
-          <img src={noticia.imagem_url} alt={noticia.titulo} className="banner-image" />
+
+       <div className="besouro-pixel"></div>
+
+        <div className="banner">
+
+          <img
+            key={noticiaAtual.id}
+            src={noticiaAtual.imagem_url}
+            alt={noticiaAtual.titulo}
+            className="banner-image"
+          />
+
           <div className="banner-overlay">
-            <h2 className="banner-pre-titulo">Principais notícias do IFMA-Campus Timon</h2>
-            <p className="banner-titulo">{noticia.titulo}</p>
-            <button className="btn-ler-mais">Clique para ler mais →</button>
+            <h2 className="banner-pre-titulo">
+              Principais notícias do IFMA-Campus Timon
+            </h2>
+
+            <p className="banner-titulo">
+              {noticiaAtual.titulo}
+            </p>
+
+            <button
+              className="btn-ler-mais"
+              onClick={() => setAberto(true)}
+            >
+              Clique para ler mais →
+            </button>
           </div>
+
         </div>
-        {noticias.length > 1 && <>
-          <button className="banner-nav-btn prev" onClick={e => { e.stopPropagation(); anterior(); }}>&#8249;</button>
-          <button className="banner-nav-btn next" onClick={e => { e.stopPropagation(); proxima(); }}>&#8250;</button>
-          <div className="banner-dots">
-            {noticias.map((_, i) => <span key={i} className={`dot ${i === indexAtual ? 'active' : ''}`} onClick={e => { e.stopPropagation(); setIndexAtual(i); }} />)}
-          </div>
-        </>}
-      </section>
-      {aberto && (
-        <div className="modal-artwork-overlay" onClick={() => setAberto(false)}>
-          <div className="modal-artwork-container modal-variacao-banner" onClick={e => e.stopPropagation()} style={{ position: 'relative' }}>
-            <button className="modal-artwork-close-btn" onClick={() => setAberto(false)} style={{ position: 'absolute', top: 16, right: 16, zIndex: 200 }}>✕</button>
-            <div className="modal-artwork-image-section">
-              <img src={noticia.imagem_url} alt={noticia.titulo} className="modal-artwork-image" />
+
+        {temMaisDeUma && (
+          <>
+            <button
+              className="banner-nav-btn prev"
+              onClick={(e) => {
+                e.stopPropagation();
+                anteriorNoticia();
+              }}
+            >
+              &#8249;
+            </button>
+
+            <button
+              className="banner-nav-btn next"
+              onClick={(e) => {
+                e.stopPropagation();
+                proximaNoticia();
+              }}
+            >
+              &#8250;
+            </button>
+
+            <div className="banner-dots">
+              {noticias.map((_, idx) => (
+                <span
+                  key={idx}
+                  className={`dot ${idx === indexAtual ? 'active' : ''}`}
+                  onClick={() => setIndexAtual(idx)}
+                />
+              ))}
             </div>
+          </>
+        )}
+      </section>
+
+      {aberto && (
+        <div
+          className="modal-artwork-overlay"
+          onClick={() => setAberto(false)}
+        >
+          <div
+            className="modal-artwork-container modal-variacao-banner"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-artwork-image-section">
+              <img
+                src={noticiaAtual.imagem_url}
+                alt={noticiaAtual.titulo}
+                className="modal-artwork-image"
+              />
+
+              <button
+                className="modal-artwork-close-btn"
+                onClick={() => setAberto(false)}
+              >
+                ✕
+              </button>
+            </div>
+
             <div className="modal-artwork-info-section">
-              <div className="modal-meta">{noticia.categoria || 'IFMA Timon'}</div>
-              <h2 className="modal-artwork-title">{noticia.titulo}</h2>
+              <div className="modal-meta">
+                {noticiaAtual.categoria || 'IFMA Timon'}
+              </div>
+
+              <h2 className="modal-artwork-title">
+                {noticiaAtual.titulo}
+              </h2>
+
               <div className="modal-artwork-description">
-                <div className="descricao-completa" dangerouslySetInnerHTML={{ __html: noticia.conteudo_completo || noticia.descricao || '' }} />
+                <div
+                  className="descricao-completa"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      noticiaAtual.conteudo_completo ||
+                      noticiaAtual.descricao
+                  }}
+                />
               </div>
             </div>
+
           </div>
         </div>
       )}
     </>
   );
-}
+};
+
+export default Banner;

@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import HeaderContato from '../components/HeaderContato';
 import RegisterModal from '../components/RegisterModal';
 import emailjs from '@emailjs/browser';
+
+// 1. Importação da imagem
+import lariaImg from '../assets/laria.png'; 
+
 import './Contato.css';
 
 export default function Contato() {
@@ -124,7 +128,6 @@ export default function Contato() {
                 <li><span className="b-icon b-blue">💙</span> Contribua com a inclusão</li>
               </ul>
 
-              {/* Botão configurado para abrir o Modal de Registro */}
               <button 
                 type="button" 
                 className="btn-admin" 
@@ -132,12 +135,21 @@ export default function Contato() {
               >
                 Quero ser administrador
               </button>
+
+              {/* 2. Tag de Imagem inserida abaixo do botão */}
+              <div className="admin-illustration-wrapper">
+                <img 
+                  src={lariaImg} 
+                  alt="Ilustração de dúvida" 
+                  className="admin-illustration" 
+                />
+              </div>
+
             </div>
           </div>
         </div>
       </main>
 
-      {/* Modal de cadastro mantido no rodapé do componente */}
       <RegisterModal isOpen={registerOpen} onClose={() => setRegisterOpen(false)} />
     </div>
   );

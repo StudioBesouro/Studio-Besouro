@@ -434,3 +434,17 @@
   cursor: not-allowed;
   transform: none;
 }
+.admin-illustration-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-left: 15px; /* Mantém o ajuste para a direita */
+  width: 100%;
+}
+
+.admin-illustration {
+  max-width: 260px; /* Aumentado de 180px para 260px */
+  height: auto;
+  object-fit: contain;
+}

@@ -8,12 +8,14 @@ import {
   FiUsers, 
   FiChevronRight, 
   FiSearch, 
-  FiEdit 
+  FiEdit,
+  FiX
 } from 'react-icons/fi';
 
 import Footer from '../components/Footer';
 
 import './Pesquisa.css';
+import '../components/Admin/Modal1.css';
 
 // Componente para alternar rapidamente entre Ativo / Inativo
 const TogglePill = ({ ativo, onChange }) => (
@@ -199,89 +201,64 @@ export default function Pesquisa() {
 
   return (
     <div className="pesquisa-page">
-      {/* MODAL DE EDIÇÃO DE BANNER */}
+      {/* MODAL DE EDIÇÃO DE BANNER - PADRONIZADO COM ESTILO VERDE (MODAL1.CSS) */}
       {editandoBanner && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.6)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 20
-          }}
-          onClick={() => setEditandoBanner(null)}
-        >
-          <div
-            style={{
-              background: 'white',
-              borderRadius: 20,
-              padding: 32,
-              maxWidth: 480,
-              width: '100%'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 style={{ margin: '0 0 20px', fontSize: '1.3rem', fontWeight: 800 }}>
-              Editar Banner
-            </h2>
-            <form onSubmit={salvarEdicao} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: 5 }}>
-                  Título
-                </label>
-                <input
-                  value={formEdicao.titulo}
-                  onChange={(e) => setFormEdicao((p) => ({ ...p, titulo: e.target.value }))}
-                  required
-                  style={{ width: '100%', padding: '10px 14px', border: '2px solid #e2e8f0', borderRadius: 10, fontSize: '1rem', boxSizing: 'border-box' }}
-                />
+        <div className="escopo-modal-cadastro modal-overlay" onClick={() => setEditandoBanner(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>✏️ Editar Banner</h3>
+              <button type="button" className="btn-close" onClick={() => setEditandoBanner(null)}>
+                <FiX size={24} />
+              </button>
+            </div>
+
+            <form onSubmit={salvarEdicao}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Título *</label>
+                  <input
+                    type="text"
+                    value={formEdicao.titulo}
+                    onChange={(e) => setFormEdicao((p) => ({ ...p, titulo: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Descrição *</label>
+                  <textarea
+                    value={formEdicao.descricao}
+                    onChange={(e) => setFormEdicao((p) => ({ ...p, descricao: e.target.value }))}
+                    rows={3}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Duração de Exibição</label>
+                  <select
+                    value={formEdicao.duracao_dias}
+                    onChange={(e) => setFormEdicao((p) => ({ ...p, duracao_dias: Number(e.target.value) }))}
+                  >
+                    <option value={0}>Sem limite</option>
+                    <option value={7}>1 semana</option>
+                    <option value={14}>2 semanas</option>
+                    <option value={30}>1 mês</option>
+                    <option value={365}>1 ano</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: 5 }}>
-                  Descrição
-                </label>
-                <textarea
-                  value={formEdicao.descricao}
-                  onChange={(e) => setFormEdicao((p) => ({ ...p, descricao: e.target.value }))}
-                  rows={3}
-                  style={{ width: '100%', padding: '10px 14px', border: '2px solid #e2e8f0', borderRadius: 10, fontSize: '1rem', boxSizing: 'border-box', resize: 'vertical' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: 5 }}>
-                  Duração
-                </label>
-                <select
-                  value={formEdicao.duracao_dias}
-                  onChange={(e) => setFormEdicao((p) => ({ ...p, duracao_dias: Number(e.target.value) }))}
-                  style={{ width: '100%', padding: '10px 14px', border: '2px solid #e2e8f0', borderRadius: 10, fontSize: '1rem' }}
-                >
-                  <option value={0}>Sem limite</option>
-                  <option value={7}>1 semana</option>
-                  <option value={14}>2 semanas</option>
-                  <option value={30}>1 mês</option>
-                  <option value={365}>1 ano</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                <button
-                  type="submit"
-                  style={{ flex: 1, background: '#8b5cf6', color: 'white', border: 'none', padding: 12, borderRadius: 10, fontWeight: 700, cursor: 'pointer' }}
-                >
-                  Salvar
-                </button>
+              <div className="modal-footer">
                 <button
                   type="button"
+                  className="btn-cancel"
                   onClick={() => setEditandoBanner(null)}
-                  style={{ flex: 1, background: '#f1f5f9', color: '#64748b', border: 'none', padding: 12, borderRadius: 10, fontWeight: 700, cursor: 'pointer' }}
                 >
                   Cancelar
+                </button>
+                <button type="submit" className="btn-submit-green">
+                  Salvar Alterações
                 </button>
               </div>
             </form>
@@ -291,7 +268,6 @@ export default function Pesquisa() {
 
       <main className="pesquisa-container">
         <div className="pesquisa-header">
-          {/* Cabeçalho principal com Botão de Voltar, Título e Busca alinhados */}
           <div className="header-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <button className="btn-voltar" onClick={() => navigate('/admin')} style={{ margin: 0 }}>
@@ -332,7 +308,7 @@ export default function Pesquisa() {
                     cursor: 'pointer',
                     fontWeight: 600,
                     fontSize: '0.82rem',
-                    background: filtroData === f ? '#8b5cf6' : '#f1f5f9',
+                    background: filtroData === f ? '#10b981' : '#f1f5f9',
                     color: filtroData === f ? 'white' : '#475569'
                   }}
                 >
@@ -385,7 +361,6 @@ export default function Pesquisa() {
 
                     <div className="card-footer-actions">
                       <div className="actions-group" style={{ alignItems: 'center', gap: 10 }}>
-                        {/* Botão de Edição rápida para Banners */}
                         {tipo === 'banner' && (
                           <button
                             className="btn-edit-pesquisa"
@@ -402,14 +377,12 @@ export default function Pesquisa() {
                           </button>
                         )}
 
-                        {/* Toggle de Status Ativo / Inativo */}
                         <TogglePill
                           ativo={item.ativo !== false}
                           onChange={() => toggleAtivo(item)}
                         />
                       </div>
 
-                      {/* Botão de Gerenciamento exclusivo para Artistas */}
                       {tipo === 'artista' && (
                         <Link to={`/paginaartista/${item.id_artista}`} className="btn-acessar-perfil">
                           Gerenciar <FiChevronRight />
