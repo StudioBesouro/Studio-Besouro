@@ -9,6 +9,18 @@ import ModalNovaObra from '../components/Admin/ModalNovaObra';
 import './PaginaArtista.css';
 import '../components/Modal.css';
 
+// Função utilitária para converter JSON string ou URL simples em Array de URLs
+const getImagens = (url) => {
+  if (!url) return [];
+  try {
+    if (url.trim().startsWith('[')) {
+      const parsed = JSON.parse(url);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [url];
+};
+
 const PaginaArtista = () => {
   const { id } = useParams(); 
   const navigate = useNavigate();
@@ -19,12 +31,15 @@ const PaginaArtista = () => {
   const [tempBio, setTempBio] = useState("");
   const [uploading, setUploading] = useState(false);
   const [showModalNova, setShowModalNova] = useState(false);
-  const [novaObra, setNovaObra] = useState({ titulo: "", descricao: "", categoria: "Desenho", arquivo: null });
+  const [novaObra, setNovaObra] = useState({ titulo: "", descricao: "", categoria: "Desenho", arquivos: [] });
   
   const [obraSelecionada, setObraSelecionada] = useState(null);
   const [showModalDetalhe, setShowModalDetalhe] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [formEdicao, setFormEdicao] = useState({ titulo: "", descricao: "", categoria: "" });
+  
+  // Estado para controlar a imagem/mídia atual do carrossel no Modal
+  const [carouselIdx, setCarouselIdx] = useState(0);
 
   const categoriasLista = ['Desenho', 'Pintura', 'Música', 'Literatura', 'Fotografia', 'Escultura'];
   const mapaCategorias = { 'Desenho': 1, 'Pintura': 2, 'Música': 3, 'Literatura': 4, 'Fotografia': 5, 'Escultura': 6 };
@@ -32,37 +47,31 @@ const PaginaArtista = () => {
 
   const identificarTipoMidia = (url) => {
     if (!url) return 'imagem';
-    const urlLower = url.toLowerCase();
-    if (urlLower.includes('.pdf') || urlLower.split('?')[0].endsWith('.pdf')) return 'pdf';
-    if (
-      urlLower.includes('.mp4') || 
-      urlLower.includes('.mov') || 
-      urlLower.includes('.webm') || 
-      urlLower.includes('.ogg') ||
-      urlLower.split('?')[0].match(/\.(mp4|mov|webm|ogg)$/)
-    ) return 'video';
+    const urlLower = url.split('?')[0].toLowerCase();
+    if (urlLower.endsWith('.pdf')) return 'pdf';
+    if (['mp4','mov','webm','ogg','m4v'].some(e => urlLower.endsWith(`.${e}`))) return 'video';
     return 'imagem';
   };
-// RENDERIZADOR ATUALIZADO: Remove barras pretas de ferramentas e abre em tela cheia ao clicar no modal
+
   const renderizarMidia = (url, titulo, emModal = false) => {
     const tipo = identificarTipoMidia(url);
 
     if (tipo === 'video') {
       return (
         <video 
-          src={url} 
+          src={emModal ? url : `${url}#t=0.1`} 
           controls={emModal}
-          autoPlay={!emModal}
+          autoPlay={emModal}
           muted={true}
-          loop={true}
+          loop={emModal}
           playsInline={true}
-          style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
+          preload="metadata"
+          style={{ objectFit: emModal ? 'contain' : 'cover', width: '100%', height: '100%', display: 'block' }}
         />
       );
     }
 
     if (tipo === 'pdf') {
-      // Força o navegador a esconder a barra de ferramentas (#toolbar=0) e painéis (#navpanes=0)
       const urlLimpaDoPdf = `${url}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
 
       if (emModal) {
@@ -72,9 +81,7 @@ const PaginaArtista = () => {
             style={{ width: '100%', height: '100%', minHeight: '450px', cursor: 'zoom-in', position: 'relative' }}
             title="Clique para abrir em tela cheia"
           >
-            {/* Camada invisível protetora: captura o clique na tela para abrir o PDF expandido e impede interações com a barra nativa */}
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10 }} />
-            
             <iframe 
               src={urlLimpaDoPdf} 
               title={titulo} 
@@ -84,7 +91,6 @@ const PaginaArtista = () => {
         );
       }
       
-      // Na listagem (Capa): Mostra a primeira página do PDF estática e limpa
       return (
         <div style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', pointerEvents: 'none' }}>
           <iframe 
@@ -96,7 +102,7 @@ const PaginaArtista = () => {
       );
     }
 
-    return <img src={url} alt={titulo} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />;
+    return <img src={url} alt={titulo} style={{ objectFit: emModal ? 'contain' : 'cover', width: '100%', height: '100%' }} draggable={false} />;
   };
 
   const handleSelectFile = async (e, tipo) => {
@@ -140,6 +146,7 @@ const PaginaArtista = () => {
 
   const abrirDetalhes = (obra) => {
     setObraSelecionada(obra);
+    setCarouselIdx(0); // Reinicia o índice do carrossel ao abrir
     setFormEdicao({
       titulo: obra.titulo,
       descricao: obra.descricao || "",
@@ -159,12 +166,60 @@ const PaginaArtista = () => {
     } catch (e) { alert(e.message); }
   };
 
+  const uploadSingleFile = async (file) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `obra_${id}_${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+    const { error } = await supabase.storage.from('obras').upload(fileName, file, { contentType: file.type, upsert: true });
+    if (error) throw error;
+    return supabase.storage.from('obras').getPublicUrl(fileName).data.publicUrl;
+  };
+
+  const handleSalvarNovaObra = async (e) => {
+    e.preventDefault();
+    const arquivosParaEnviar = novaObra.arquivos || (novaObra.arquivo ? [novaObra.arquivo] : []);
+    
+    if (arquivosParaEnviar.length === 0) {
+      alert("Selecione pelo menos um arquivo.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      let imagemUrl;
+      if (arquivosParaEnviar.length === 1) {
+        imagemUrl = await uploadSingleFile(arquivosParaEnviar[0]);
+      } else {
+        const urls = await Promise.all(arquivosParaEnviar.map(f => uploadSingleFile(f)));
+        imagemUrl = JSON.stringify(urls); // Salva como string de Array JSON no Supabase
+      }
+      
+      const { error: insertError } = await supabase.from('obras').insert([{ 
+        id_artista: id, 
+        id_categoria: mapaCategorias[novaObra.categoria] || 1, 
+        titulo: novaObra.titulo, 
+        descricao: novaObra.descricao, 
+        imagem_url: imagemUrl 
+      }]);
+
+      if (insertError) throw insertError;
+      
+      buscarDados();
+      setShowModalNova(false);
+      setNovaObra({ titulo: "", descricao: "", categoria: "Desenho", arquivos: [] });
+      alert("Obra publicada com sucesso!");
+    } catch (e) { 
+      alert("Erro ao salvar obra: " + e.message); 
+    } finally { 
+      setUploading(false); 
+    }
+  };
+
   const deletarObra = async () => {
     if (!obraSelecionada || !window.confirm("Excluir esta obra?")) return;
     try {
       const { error } = await supabase.from('obras').delete().eq('id_obra', obraSelecionada.id_obra);
       if (error) throw error;
-      setArtista({ ...artista, obras: artista.obras.filter(o => o.id_obra !== obraSelecionada.id_obra) });
+      buscarDados();
       setShowModalDetalhe(false);
       alert("Obra excluída!");
     } catch (err) { alert(err.message); }
@@ -241,103 +296,127 @@ const PaginaArtista = () => {
           <button className="btn-adicionar-verde" onClick={() => setShowModalNova(true)}><FiPlus /> Adicionar Nova Obra</button>
         </div>
         <div className="grid-obras-clean">
-          {artista?.obras?.map(obra => (
-            <div key={obra.id_obra} className="card-obra-minimal clickable" onClick={() => abrirDetalhes(obra)}>
-              <div className="img-container">
-                {renderizarMidia(obra.imagem_url, obra.titulo, false)}
+          {artista?.obras?.map(obra => {
+            const imgs = getImagens(obra.imagem_url);
+            return (
+              <div key={obra.id_obra} className="card-obra-minimal clickable" onClick={() => abrirDetalhes(obra)} style={{ position: 'relative' }}>
+                {imgs.length > 1 && (
+                  <div style={{ position: 'absolute', top: 8, right: 8, zIndex: 5, background: 'rgba(0,0,0,0.65)', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: 99 }}>
+                    {imgs.length} arquivos
+                  </div>
+                )}
+                <div className="img-container">
+                  {renderizarMidia(imgs[0], obra.titulo, false)}
+                </div>
+                <div className="info-obra-bottom"><h3>{obra.titulo}</h3></div>
               </div>
-              <div className="info-obra-bottom"><h3>{obra.titulo}</h3></div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
+      {/* MODAL DE CADASTRO */}
       <ModalNovaObra 
-        show={showModalNova} onBlur={() => setShowModalNova(false)} 
-        onSubmit={async (e) => {
-            e.preventDefault();
-            setUploading(true);
-            try {
-              const fileExt = novaObra.arquivo.name.split('.').pop();
-              const fileName = `obra_${id}_${Date.now()}.${fileExt}`;
-              
-              await supabase.storage.from('obras').upload(fileName, novaObra.arquivo, {
-                contentType: novaObra.arquivo.type,
-                upsert: true
-              });
-
-              const { data: { publicUrl } } = supabase.storage.from('obras').getPublicUrl(fileName);
-              await supabase.from('obras').insert([{ id_artista: id, id_categoria: mapaCategorias[novaObra.categoria], titulo: novaObra.titulo, descricao: novaObra.descricao, imagem_url: publicUrl }]);
-              
-              buscarDados();
-              setShowModalNova(false);
-              setNovaObra({ titulo: "", descricao: "", categoria: "Desenho", arquivo: null });
-              alert("Obra publicada com sucesso!");
-            } catch (e) { alert(e.message); } finally { setUploading(false); }
-        }}
-        novaObra={novaObra} setNovaObra={setNovaObra} uploading={uploading} categoriasLista={categoriasLista}
+        isOpen={showModalNova} 
+        onClose={() => setShowModalNova(false)} 
+        onSave={handleSalvarNovaObra}
+        novaObra={novaObra} 
+        setNovaObra={setNovaObra} 
+        loading={uploading} 
+        categoriasLista={categoriasLista}
       />
       
-      {/* MODAL MULTIMÍDIA OTIMIZADO */}
-      {showModalDetalhe && obraSelecionada && (
-        <div className="modal-overlay" onClick={() => { setShowModalDetalhe(false); setModoEdicao(false); }}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            
-            <button className="modal-close" onClick={() => { setShowModalDetalhe(false); setModoEdicao(false); }}>
-              <FiX />
-            </button>
+      {/* MODAL DETALHE COM CARROSSEL MULTIMÍDIA */}
+      {showModalDetalhe && obraSelecionada && (() => {
+        const imgs = getImagens(obraSelecionada.imagem_url);
+        const urlMidiaAtual = imgs[carouselIdx] || imgs[0];
 
-            <div className="modal-body">
-              {/* Coluna da Mídia */}
-              <div className="modal-image-container" style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'stretch', justifyContent: 'center', background: '#000' }}>
-                {renderizarMidia(obraSelecionada.imagem_url, obraSelecionada.titulo, true)}
-              </div>
+        return (
+          <div className="modal-overlay" onClick={() => { setShowModalDetalhe(false); setModoEdicao(false); }}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              
+              <button className="modal-close" onClick={() => { setShowModalDetalhe(false); setModoEdicao(false); }}>
+                <FiX />
+              </button>
 
-              {/* Coluna de Informações / Form de Edição */}
-              <div className="modal-info">
-                {!modoEdicao ? (
-                  <>
-                    <h2>{obraSelecionada.titulo}</h2>
-                    <div className="modal-meta">
-                      <span>{mapaCategoriasInverso[obraSelecionada.id_categoria]}</span>
-                    </div>
-                    <div className="modal-description">
-                      <p>{obraSelecionada.descricao || <em>Sem descrição cadastrada.</em>}</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="form-edicao-obra" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
-                    <h3 style={{ margin: '0 0 10px 0', color: '#1e293b' }}>Editar Informações</h3>
-                    <input value={formEdicao.titulo} onChange={e => setFormEdicao({...formEdicao, titulo: e.target.value})} placeholder="Título" className="textarea-fake" style={{ minHeight: 'auto', padding: '12px' }} />
-                    <select value={formEdicao.categoria} onChange={e => setFormEdicao({...formEdicao, categoria: e.target.value})} className="textarea-fake" style={{ minHeight: 'auto', padding: '12px', appearance: 'auto' }}>
-                      {categoriasLista.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                    </select>
-                    <textarea value={formEdicao.descricao} onChange={e => setFormEdicao({...formEdicao, descricao: e.target.value})} rows={4} placeholder="Descrição" className="textarea-edit" />
-                  </div>
-                )}
+              <div className="modal-body">
+                {/* Coluna da Mídia / Carrossel */}
+                <div className="modal-image-container" style={{ position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
+                  {renderizarMidia(urlMidiaAtual, obraSelecionada.titulo, true)}
 
-                {/* Rodapé Interno do Painel */}
-                <div style={{ marginTop: 'auto', paddingTop: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  {modoEdicao ? (
+                  {/* Setas e Controles do Carrossel */}
+                  {imgs.length > 1 && (
                     <>
-                      <button className="btn-cancel-small" style={{ padding: '10px 16px' }} onClick={() => setModoEdicao(false)}>Cancelar</button>
-                      <button className="btn-save-small" style={{ padding: '10px 16px' }} onClick={salvarEdicaoObra}>Salvar</button>
-                    </>
-                  ) : (
-                    <>
-                      <button className="btn-edit-small" style={{ padding: '10px 16px' }} onClick={() => setModoEdicao(true)}><FiEdit2 /> Editar</button>
-                      <button className="btn-cancel-small" style={{ padding: '10px', marginLeft: 'auto' }} onClick={deletarObra} title="Excluir Obra">
-                        <FiTrash2 size={18} />
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setCarouselIdx((prev) => (prev - 1 + imgs.length) % imgs.length); }} 
+                        style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', fontSize: '1.2rem', zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        ‹
                       </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setCarouselIdx((prev) => (prev + 1) % imgs.length); }} 
+                        style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', fontSize: '1.2rem', zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        ›
+                      </button>
+                      
+                      {/* Bolinhas Indicadoras */}
+                      <div style={{ position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6, zIndex: 20 }}>
+                        {imgs.map((_, i) => (
+                          <button 
+                            key={i} 
+                            onClick={(e) => { e.stopPropagation(); setCarouselIdx(i); }} 
+                            style={{ width: 8, height: 8, borderRadius: '50%', background: i === carouselIdx ? '#fff' : 'rgba(255,255,255,0.4)', border: 'none', padding: 0, cursor: 'pointer' }} 
+                          />
+                        ))}
+                      </div>
                     </>
                   )}
                 </div>
-              </div>
 
+                {/* Coluna de Informações / Form de Edição */}
+                <div className="modal-info">
+                  {!modoEdicao ? (
+                    <>
+                      <h2>{obraSelecionada.titulo}</h2>
+                      <div className="modal-meta">
+                        <span>{mapaCategoriasInverso[obraSelecionada.id_categoria]}</span>
+                      </div>
+                      <div className="modal-description">
+                        <p>{obraSelecionada.descricao || <em>Sem descrição cadastrada.</em>}</p>
+                      </div>
+                      <div style={{ display: 'flex', gap: 10, marginTop: 'auto', paddingTop: 15 }}>
+                        <button className="btn-edit-small" onClick={() => setModoEdicao(true)} style={{ padding: '8px 14px', borderRadius: 8 }}>
+                          <FiEdit2 /> Editar
+                        </button>
+                        <button className="btn-cancel-small" onClick={deletarObra} style={{ padding: '8px 14px', borderRadius: 8, background: '#fff1f2', color: '#e11d48' }}>
+                          <FiTrash2 /> Excluir
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="form-edicao-obra" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+                      <h3 style={{ margin: '0 0 10px 0', color: '#1e293b' }}>Editar Informações</h3>
+                      <input value={formEdicao.titulo} onChange={e => setFormEdicao({...formEdicao, titulo: e.target.value})} placeholder="Título" className="textarea-fake" style={{ minHeight: 'auto', padding: '12px' }} />
+                      <select value={formEdicao.categoria} onChange={e => setFormEdicao({...formEdicao, categoria: e.target.value})} className="textarea-fake" style={{ minHeight: 'auto', padding: '12px', appearance: 'auto' }}>
+                        {categoriasLista.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      </select>
+                      <textarea value={formEdicao.descricao} onChange={e => setFormEdicao({...formEdicao, descricao: e.target.value})} rows={4} placeholder="Descrição" className="textarea-edit" />
+                      
+                      <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
+                        <button onClick={salvarEdicaoObra} className="btn-save-small" style={{ flex: 1, padding: 10, justifyContent: 'center' }}><FiCheck /> Salvar</button>
+                        <button onClick={() => setModoEdicao(false)} className="btn-cancel-small" style={{ flex: 1, padding: 10, justifyContent: 'center' }}><FiX /> Cancelar</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
+
     </div>
   );
 };

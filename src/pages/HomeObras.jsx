@@ -1,8 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '../lib/supabaseClient';
+import 'react-pdf/dist/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
 import './HomeObras.css';
 import '../components/Modal.css';
+
+// Configuração do worker do PDF.js
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
+// Componente para exibir o PDF sem barras do navegador e com scroll funcional
+const PdfViewerModal = ({ src }) => {
+  const [numPages, setNumPages] = useState(null);
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        maxHeight: '80vh',
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        background: '#323639',
+        padding: '16px 0'
+      }}
+      onWheel={(e) => e.stopPropagation()}
+    >
+      <Document
+        file={src}
+        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+        loading={<div style={{ color: '#fff', padding: 20 }}>Carregando documento...</div>}
+      >
+        {Array.from(new Array(numPages), (_, index) => (
+          <Page
+            key={`page_${index + 1}`}
+            pageNumber={index + 1}
+            renderTextLayer={false}
+            renderAnnotationLayer={false}
+            width={480}
+            style={{ marginBottom: 12 }}
+          />
+        ))}
+      </Document>
+    </div>
+  );
+};
 
 // Auxiliar para identificar o tipo de mídia pela URL
 const identificarTipoMidia = (url) => {
@@ -38,7 +82,7 @@ const extrairImagens = (url) => {
       if (Array.isArray(parsed)) return parsed;
     }
   } catch (err) {
-    // Caso não seja um JSON válido, cai no retorno padrão
+    // Caso não seja um JSON válido
   }
   return [url];
 };
@@ -62,7 +106,6 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
       try {
         setLoading(true);
 
-        // 1. Consulta principal (Sintaxe segura para Foreign Keys no Supabase)
         let { data, error } = await supabase
           .from('obras')
           .select(`
@@ -76,7 +119,6 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
           `)
           .order('created_at', { ascending: false });
 
-        // Fallback caso a coluna 'fixada' não exista na tabela 'obras'
         if (error) {
           console.warn("Aviso ao buscar obras (tentando fallback):", error.message);
           const resFallback = await supabase
@@ -94,7 +136,6 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
           data = resFallback.data || [];
         }
 
-        // 2. Busca de artistas inativos (com tratamento para evitar que o erro 400 trave a página)
         const artistasDesativados = new Set();
         try {
           const { data: inativos, error: errInativos } = await supabase
@@ -109,7 +150,6 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
           console.warn("Aviso: Não foi possível filtrar artistas desativados.", err);
         }
 
-        // 3. Formatação dos dados recebidos
         const obrasFormatadas = (data || [])
           .filter(obra => {
             const idArt = obra.perfil_artista?.id_artista;
@@ -132,14 +172,12 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
             };
           });
 
-        // Ordenação: Fixadas no topo e o restante em ordem aleatória (shuffle)
         const fixadas = obrasFormatadas.filter(o => o.fixada);
         const naoFixadas = shuffle(obrasFormatadas.filter(o => !o.fixada));
         const obrasOrdenadas = [...fixadas, ...naoFixadas];
 
         setObras(obrasOrdenadas);
 
-        // Abertura automática caso venha um parâmetro na URL
         const queryParams = new URLSearchParams(location.search);
         const obraIdDaUrl = queryParams.get('obraId');
         if (obraIdDaUrl) {
@@ -159,7 +197,7 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
     fetchObras();
   }, [location.search]);
 
-  // Controles do Modal e Navegação entre Obras
+  // Controles do Modal
   const abrirObra = (obra, lista, idx) => {
     setObraSelecionada(obra);
     setImagemIdx(0);
@@ -175,7 +213,7 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
     setIdxNaLista(novoIdx);
   };
 
-  // Filtro por categoria e busca
+  // Filtro
   const obrasFiltradas = obras.filter(obra => {
     const correspondeCategoria = categoriaAtiva === 'Todas' || obra.categoria === categoriaAtiva;
     const textoBusca = buscaTermoExterno.toLowerCase();
@@ -186,7 +224,7 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
     return correspondeCategoria && correspondeBusca;
   });
 
-  // Renderização de mídia nos cards
+  // Renderização de mídia nos cards do Grid
   const renderCardMedia = (obra) => {
     const src = obra.imagens[0] || obra.imagem;
     const tipo = identificarTipoMidia(src);
@@ -250,22 +288,7 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
     }
 
     if (tipo === 'pdf') {
-      const urlLimpa = `${src}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
-      return (
-        <div
-          onClick={() => window.open(src, '_blank')}
-          style={{ width: '100%', height: '100%', minHeight: '450px', cursor: 'zoom-in', position: 'relative' }}
-          title="Clique para ler o PDF em nova aba"
-        >
-          <div style={{ position: 'absolute', inset: 0, zIndex: 10 }} onContextMenu={e => e.preventDefault()} />
-          <iframe
-            src={urlLimpa}
-            className="modal-artwork-media-element pdf-viewer"
-            title={obra.titulo}
-            style={{ width: '100%', height: '100%', minHeight: '450px', border: 'none', background: '#fff' }}
-          />
-        </div>
-      );
+      return <PdfViewerModal src={src} />;
     }
 
     return (
@@ -304,7 +327,6 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
         {obrasFiltradas.length > 0 ? (
           obrasFiltradas.map((obra, idx) => (
             <div key={obra.id} className="obra-card">
-              {/* Badge de Obra Fixada */}
               {obra.fixada && (
                 <div style={{
                   position: 'absolute',
@@ -322,7 +344,6 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
                 </div>
               )}
 
-              {/* Conteúdo Visual / Capa */}
               <div
                 className={`obra-imagem ${obra.tipoMidia}-container`}
                 onClick={() => abrirObra(obra, obrasFiltradas, idx)}
@@ -330,7 +351,6 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
               >
                 {renderCardMedia(obra)}
                 
-                {/* Indicador se a obra possuir múltiplos arquivos */}
                 {obra.imagens.length > 1 && (
                   <div style={{
                     position: 'absolute',
@@ -348,7 +368,6 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
                 )}
               </div>
 
-              {/* Informações da Obra */}
               <div className="obra-info">
                 <h3 className="obra-titulo" style={{ fontSize: '1.2rem', fontWeight: '700' }}>
                   {obra.titulo}
@@ -455,33 +474,9 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
             <div className="modal-artwork-image-section" style={{ background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
               {renderModalMedia(obraSelecionada)}
 
-              {/* Controles do carrossel interno */}
+              {/* Controles do carrossel interno caso existam mais imagens (apenas seta da direita) */}
               {obraSelecionada.imagens.length > 1 && (
                 <>
-                  <button
-                    type="button"
-                    onClick={() => setImagemIdx(i => (i - 1 + obraSelecionada.imagens.length) % obraSelecionada.imagens.length)}
-                    style={{
-                      position: 'absolute',
-                      left: 10,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'rgba(0,0,0,0.5)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: 36,
-                      height: 36,
-                      cursor: 'pointer',
-                      fontSize: '1.1rem',
-                      zIndex: 50,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    ‹
-                  </button>
                   <button
                     type="button"
                     onClick={() => setImagemIdx(i => (i + 1) % obraSelecionada.imagens.length)}

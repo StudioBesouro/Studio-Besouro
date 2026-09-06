@@ -2,72 +2,83 @@ import React, { useRef } from 'react';
 import { FiX, FiUploadCloud, FiTrash2 } from 'react-icons/fi';
 import './Modal1.css';
 
-const catsDefault = ['Desenho', 'Pintura', 'Música', 'Literatura', 'Fotografia', 'Escultura'];
+const CATS_DEFAULT = ['Desenho', 'Pintura', 'Música', 'Literatura', 'Fotografia', 'Escultura'];
 
 const ModalNovaObra = ({ 
-  show, 
-  onBlur, 
-  onSubmit, 
-  novaObra, 
+  isOpen, 
+  onClose, 
+  onSave, 
+  novaObra = { titulo: '', descricao: '', categoria: '', arquivos: [] }, 
   setNovaObra, 
-  uploading, 
-  categoriasLista = catsDefault 
+  loading = false, 
+  categoriasLista = CATS_DEFAULT 
 }) => {
   const inputRef = useRef(null);
 
-  if (!show) return null;
+  // Se o modal não estiver aberto, não renderiza nada
+  if (!isOpen) return null;
+
+  const arquivosAtuais = novaObra.arquivos || (novaObra.arquivo ? [novaObra.arquivo] : []);
 
   // Adiciona novos arquivos sem sobrescrever os já selecionados
   const handleFiles = (e) => {
     const novos = Array.from(e.target.files || []);
-    const atuais = novaObra.arquivos || (novaObra.arquivo ? [novaObra.arquivo] : []);
-    setNovaObra({
-      ...novaObra,
-      arquivos: [...atuais, ...novos],
-      arquivo: [...atuais, ...novos][0] || null // Mantém retrocompatibilidade
-    });
+    const atualizados = [...arquivosAtuais, ...novos];
+    
+    setNovaObra((prev) => ({
+      ...prev,
+      arquivos: atualizados,
+      arquivo: atualizados[0] || null // Retrocompatibilidade
+    }));
   };
 
   // Remove um arquivo específico da lista
   const removeFile = (idx) => {
-    const filtrados = (novaObra.arquivos || []).filter((_, i) => i !== idx);
-    setNovaObra({
-      ...novaObra,
+    const filtrados = arquivosAtuais.filter((_, i) => i !== idx);
+    setNovaObra((prev) => ({
+      ...prev,
       arquivos: filtrados,
       arquivo: filtrados[0] || null
-    });
+    }));
   };
 
-  const listaArquivos = novaObra.arquivos || (novaObra.arquivo ? [novaObra.arquivo] : []);
-
   return (
-    <div className="modal-overlay escopo-modal-cadastro" onClick={onBlur}>
+    <div className="modal-overlay escopo-modal-cadastro" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        
+        {/* Cabeçalho */}
         <div className="modal-header">
           <h3>✨ Cadastrar Nova Obra</h3>
-          <button type="button" className="btn-close" onClick={onBlur}>
+          <button type="button" className="btn-close" onClick={onClose} aria-label="Fechar">
             <FiX size={24} />
           </button>
         </div>
 
-        <form onSubmit={onSubmit}>
+        {/* Formulário */}
+        <form onSubmit={onSave}>
           <div className="modal-body">
+            
+            {/* Título */}
             <div className="form-group">
-              <label>Título da Obra *</label>
+              <label htmlFor="titulo">Título da Obra *</label>
               <input 
+                id="titulo"
                 type="text" 
                 required 
+                placeholder="Ex: Noite Estrelada"
                 value={novaObra.titulo || ''} 
-                onChange={(e) => setNovaObra({ ...novaObra, titulo: e.target.value })} 
+                onChange={(e) => setNovaObra((prev) => ({ ...prev, titulo: e.target.value }))} 
               />
             </div>
 
+            {/* Categoria */}
             <div className="form-group">
-              <label>Categoria *</label>
+              <label htmlFor="categoria">Categoria *</label>
               <select 
+                id="categoria"
                 required 
                 value={novaObra.categoria || ''} 
-                onChange={(e) => setNovaObra({ ...novaObra, categoria: e.target.value })}
+                onChange={(e) => setNovaObra((prev) => ({ ...prev, categoria: e.target.value }))}
               >
                 <option value="" disabled>Selecione uma categoria</option>
                 {categoriasLista.map((cat) => (
@@ -76,20 +87,25 @@ const ModalNovaObra = ({
               </select>
             </div>
 
+            {/* Descrição */}
             <div className="form-group">
-              <label>Descrição *</label>
+              <label htmlFor="descricao">Descrição *</label>
               <textarea 
+                id="descricao"
                 required
+                rows={4}
+                placeholder="Conte um pouco sobre a história ou inspiração dessa obra..."
                 value={novaObra.descricao || ''} 
-                onChange={(e) => setNovaObra({ ...novaObra, descricao: e.target.value })} 
+                onChange={(e) => setNovaObra((prev) => ({ ...prev, descricao: e.target.value }))} 
               />
             </div>
 
+            {/* Upload de Mídias */}
             <div className="form-group">
               <label>Arquivos (Selecione múltiplos para carrossel) *</label>
               <label className="upload-dropzone">
-                <FiUploadCloud size={24} />
-                <span>Clique para selecionar as mídias...</span>
+                <FiUploadCloud size={28} />
+                <span>Clique aqui para selecionar as mídias...</span>
                 <input 
                   ref={inputRef}
                   type="file" 
@@ -100,26 +116,26 @@ const ModalNovaObra = ({
                 />
               </label>
 
-              {/* Lista de Mídias com opção de Remoção */}
-              {listaArquivos.length > 0 && (
+              {/* Lista de Mídias Selecionadas */}
+              {arquivosAtuais.length > 0 && (
                 <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {listaArquivos.map((file, idx) => (
+                    {arquivosAtuais.map((file, idx) => (
                       <div 
-                        key={idx} 
+                        key={`${file.name}-${idx}`} 
                         style={{
                           background: '#f1f5f9',
                           border: '1px solid #cbd5e1',
                           borderRadius: 8,
-                          padding: '5px 10px',
-                          fontSize: '0.8rem',
+                          padding: '6px 12px',
+                          fontSize: '0.85rem',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 6,
+                          gap: 8,
                           color: '#334155'
                         }}
                       >
-                        <span>{file.name.length > 20 ? `${file.name.substring(0, 20)}…` : file.name}</span>
+                        <span>{file.name.length > 22 ? `${file.name.substring(0, 22)}…` : file.name}</span>
                         <button 
                           type="button" 
                           onClick={() => removeFile(idx)} 
@@ -132,17 +148,17 @@ const ModalNovaObra = ({
                             alignItems: 'center',
                             padding: 0
                           }}
-                          title="Remover"
+                          title="Remover arquivo"
                         >
-                          <FiTrash2 size={14} />
+                          <FiTrash2 size={15} />
                         </button>
                       </div>
                     ))}
                   </div>
 
-                  {listaArquivos.length > 1 && (
+                  {arquivosAtuais.length > 1 && (
                     <span style={{ fontSize: '0.78rem', color: '#8b5cf6', fontWeight: 600, marginTop: 4 }}>
-                      📸 {listaArquivos.length} arquivos selecionados — será exibido como carrossel.
+                      📸 {arquivosAtuais.length} arquivos selecionados — serão exibidos em formato carrossel.
                     </span>
                   )}
                 </div>
@@ -150,16 +166,17 @@ const ModalNovaObra = ({
             </div>
           </div>
 
+          {/* Rodapé / Ações */}
           <div className="modal-footer">
-            <button type="button" className="btn-cancel" onClick={onBlur}>
+            <button type="button" className="btn-cancel" onClick={onClose}>
               Cancelar
             </button>
             <button 
               type="submit" 
               className="btn-submit-green" 
-              disabled={uploading || listaArquivos.length === 0}
+              disabled={loading || arquivosAtuais.length === 0}
             >
-              {uploading ? "Publicando..." : "Publicar Obra"}
+              {loading ? "Publicando..." : "Publicar Obra"}
             </button>
           </div>
         </form>
