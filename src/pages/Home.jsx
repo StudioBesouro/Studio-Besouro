@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import Banner from '../components/Banner';
 import ConviteArtista from '../components/ConviteArtista';
 import HomeObras from './HomeObras';
 import './Home.css';
+
+// Import da imagem de divulgação
+import divulgacaoImg from '../assets/divulgacao.png';
 
 export default function Home({ pesquisaTermo = '' }) {
   const [banners, setBanners] = useState([]);
@@ -21,7 +25,7 @@ export default function Home({ pesquisaTermo = '' }) {
       }
 
       const agora = Date.now();
-      // Filtra os banners que estão marcados como ativos e que não expiraram pela duração em dias
+      // Filtra os banners ativos e dentro do prazo
       const bannersValidos = (data || []).filter((b) => {
         if (b.ativo === false) return false;
         if (b.duracao_dias > 0) {
@@ -39,10 +43,69 @@ export default function Home({ pesquisaTermo = '' }) {
 
   return (
     <div className="home-content">
-      {/* Convite para o Artista adicionado em cima do banner */}
+      {/* Convite para o Artista */}
       <ConviteArtista />
 
-      {/* 1. Seção do Banner */}
+      {/* 1. Imagem de Divulgação + Botão de Curadoria */}
+      <section 
+        className="divulgacao-section" 
+        style={{ 
+          width: '100%', 
+          maxWidth: '1200px', 
+          margin: '16px auto 24px auto', 
+          padding: '0 20px', 
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
+        <img 
+          src={divulgacaoImg} 
+          alt="Divulgação" 
+          style={{ 
+            width: '100%', 
+            height: 'auto', 
+            display: 'block',
+            borderRadius: '12px' 
+          }} 
+        />
+
+        {/* Botão de Chamada para a Curadoria */}
+        <Link 
+          to="/contato" 
+          style={{
+            marginTop: '16px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+            color: '#ffffff',
+            fontWeight: '600',
+            fontSize: '1rem',
+            padding: '12px 28px',
+            borderRadius: '50px',
+            textDecoration: 'none',
+            boxShadow: '0 4px 14px rgba(139, 92, 246, 0.4)',
+            transition: 'all 0.25s ease-in-out',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.6)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 14px rgba(139, 92, 246, 0.4)';
+          }}
+        >
+          <span>Falar com a Curadoria</span>
+          <span style={{ fontSize: '1.1rem' }}>→</span>
+        </Link>
+      </section>
+
+      {/* 2. Seção do Banner */}
       <section className="banner-section">
         {banners.length > 0 ? (
           <Banner noticias={banners} />

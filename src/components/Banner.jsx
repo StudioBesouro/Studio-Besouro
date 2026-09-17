@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './Banner.css';
 import './Modal.css';
 
-
 const Banner = ({ noticias }) => {
   const [indexAtual, setIndexAtual] = useState(0);
   const [aberto, setAberto] = useState(false);
@@ -11,10 +10,6 @@ const Banner = ({ noticias }) => {
 
   const proximaNoticia = () => {
     setIndexAtual((prev) => (prev + 1) % noticias.length);
-  };
-
-  const anteriorNoticia = () => {
-    setIndexAtual((prev) => (prev - 1 + noticias.length) % noticias.length);
   };
 
   useEffect(() => {
@@ -34,11 +29,10 @@ const Banner = ({ noticias }) => {
   return (
     <>
       <section className="banner-wrapper">
+        <div className="besouro-pixel"></div>
 
-       <div className="besouro-pixel"></div>
-
-        <div className="banner">
-
+        {/* CLICK NO BANNER INTEIRO PARA ABRIR O MODAL */}
+        <div className="banner" onClick={() => setAberto(true)}>
           <img
             key={noticiaAtual.id}
             src={noticiaAtual.imagem_url}
@@ -55,28 +49,14 @@ const Banner = ({ noticias }) => {
               {noticiaAtual.titulo}
             </p>
 
-            <button
-              className="btn-ler-mais"
-              onClick={() => setAberto(true)}
-            >
+            <button className="btn-ler-mais">
               Clique para ler mais →
             </button>
           </div>
-
         </div>
 
         {temMaisDeUma && (
           <>
-            <button
-              className="banner-nav-btn prev"
-              onClick={(e) => {
-                e.stopPropagation();
-                anteriorNoticia();
-              }}
-            >
-              &#8249;
-            </button>
-
             <button
               className="banner-nav-btn next"
               onClick={(e) => {
@@ -92,7 +72,10 @@ const Banner = ({ noticias }) => {
                 <span
                   key={idx}
                   className={`dot ${idx === indexAtual ? 'active' : ''}`}
-                  onClick={() => setIndexAtual(idx)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIndexAtual(idx);
+                  }}
                 />
               ))}
             </div>
@@ -109,19 +92,20 @@ const Banner = ({ noticias }) => {
             className="modal-artwork-container modal-variacao-banner"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* BOTÃO DE FECHAR NO TOPO DO CONTAINER PRINCIPAL DO MODAL */}
+            <button
+              className="modal-artwork-close-btn"
+              onClick={() => setAberto(false)}
+            >
+              ✕
+            </button>
+
             <div className="modal-artwork-image-section">
               <img
                 src={noticiaAtual.imagem_url}
                 alt={noticiaAtual.titulo}
                 className="modal-artwork-image"
               />
-
-              <button
-                className="modal-artwork-close-btn"
-                onClick={() => setAberto(false)}
-              >
-                ✕
-              </button>
             </div>
 
             <div className="modal-artwork-info-section">
@@ -144,7 +128,6 @@ const Banner = ({ noticias }) => {
                 />
               </div>
             </div>
-
           </div>
         </div>
       )}

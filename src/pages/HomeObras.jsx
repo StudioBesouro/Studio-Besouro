@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '../lib/supabaseClient';
-import 'react-pdf/dist/Page/TextLayer.css';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
 import './HomeObras.css';
 import '../components/Modal.css';
 
 // Configuração do worker do PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.mjs`;
 
 // Componente para exibir o PDF sem barras do navegador e com scroll funcional
 const PdfViewerModal = ({ src }) => {
@@ -99,7 +97,7 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
   const [idxNaLista, setIdxNaLista] = useState(0);
 
   const location = useLocation();
-  const categorias = ['Todas', 'Desenho', 'Pintura', 'Música', 'Literatura', 'Fotografia', 'Escultura'];
+  const categorias = ['Todas', 'Desenho', 'Pintura', 'Música', 'Literatura', 'Fotografia', 'Dança'];
 
   useEffect(() => {
     const fetchObras = async () => {
@@ -306,8 +304,8 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
   if (loading) return <div className="loading">Carregando...</div>;
 
   return (
-    <section className="home-obras-section">
-      <h2 className="section-title">Obras em Destaque</h2>
+    <section className="home-obras-section" style={{ paddingTop: '16px', marginTop: 0 }}>
+      <h2 className="section-title" style={{ marginTop: 0 }}>Obras em Destaque</h2>
 
       {/* Bar das Categorias */}
       <div className="categorias-filtro">
@@ -474,7 +472,7 @@ const HomeObras = ({ buscaTermoExterno = "" }) => {
             <div className="modal-artwork-image-section" style={{ background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
               {renderModalMedia(obraSelecionada)}
 
-              {/* Controles do carrossel interno caso existam mais imagens (apenas seta da direita) */}
+              {/* Controles do carrossel interno */}
               {obraSelecionada.imagens.length > 1 && (
                 <>
                   <button

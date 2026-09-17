@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 // 1. Importação dos Componentes de Layout
 import Header from './components/Header';
 import Footer from './components/Footer';
-import BackToTop from './components/BackToTop';
 
 // 2. Importação das Páginas
 import Home from './pages/Home';
@@ -44,7 +43,7 @@ function AppContent() {
     isPaginaArtistaGestao;
 
   return (
-    <div id="root">
+    <div className="app-container">
       {!esconderHeader && <Header />}
 
       <div className="main-content-wrapper">
@@ -61,7 +60,6 @@ function AppContent() {
       </div>
 
       {!esconderFooter && <Footer />}
-      <BackToTop />
     </div>
   );
 }

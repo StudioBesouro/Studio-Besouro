@@ -34,3 +34,71 @@ html, body {
   width: 100%;
   padding-top: 0px; 
 }
+/* ===================================================
+   AJUSTES GLOBAIS PARA DISPOSITIVOS MÓVEIS (RESPONSIVO)
+   =================================================== */
+
+/* 1. Previne que elementos vazem lateralmente e gerem rolagem horizontal */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 2. Responsividade universal para mídias */
+img, video, iframe, canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 3. Ajustes específicos para telas de celular (até 768px) */
+@media (max-width: 768px) {
+
+  /* DpI / Leitura: Suaviza fontes e ajusta tamanhos grandes */
+  h1 { font-size: 1.8rem !important; }
+  h2 { font-size: 1.5rem !important; }
+  h3 { font-size: 1.25rem !important; }
+  
+  /* Melhora área de clique nos botões e inputs (mínimo recomendado para touch: 44px) */
+  button, 
+  a.btn, 
+  input[type="submit"],
+  select {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  /* Previne zoom automático irritante no iOS ao clicar em inputs */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* Transforma layouts lado a lado (grids e flexboxes de 2+ colunas) em 1 coluna */
+  .content-grid,
+  .grid,
+  .flex-row,
+  [class*="-grid"],
+  [class*="-column"] {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  /* Reduz margens e paddings exagerados de containers */
+  main, section, container, [class*="-container"] {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    margin-top: 16px;
+  }
+
+  /* Modais ocupando a tela quase cheia no celular */
+  .modal-content, [class*="modal-"] {
+    width: 95% !important;
+    max-width: 100% !important;
+    padding: 20px !important;
+    margin: 10px auto !important;
+  }
+}
