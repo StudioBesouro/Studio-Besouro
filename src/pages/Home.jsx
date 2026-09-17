@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import Banner from '../components/Banner';
-import ConviteArtista from '../components/ConviteArtista';
 import HomeObras from './HomeObras';
 import './Home.css';
 
@@ -43,8 +42,8 @@ export default function Home({ pesquisaTermo = '' }) {
 
   return (
     <div className="home-content">
-      {/* Convite para o Artista */}
-      <ConviteArtista />
+      {/* Espaçamento proporcional ao lugar onde ficava o ConviteArtista */}
+      <div style={{ height: '80px', width: '100%' }} />
 
       {/* 1. Imagem de Divulgação + Botão de Curadoria */}
       <section 
@@ -52,7 +51,7 @@ export default function Home({ pesquisaTermo = '' }) {
         style={{ 
           width: '100%', 
           maxWidth: '1200px', 
-          margin: '16px auto 24px auto', 
+          margin: '0 auto 24px auto', 
           padding: '0 20px', 
           boxSizing: 'border-box',
           display: 'flex',

@@ -8,3 +8,58 @@
 }
 .convite-faixa p { margin: 0; font-size: 1rem; color: #374151; }
 .convite-faixa strong { color: #65a30d; }
+@media (max-width: 768px) {
+  .convite-faixa { 
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, #f0fdf4 0%, #faf5ff 100%);
+    border: 1.5px solid #d4ed91;
+    box-shadow: 0 2px 12px rgba(132,204,22,0.08);
+    margin: 0 12px 32px; 
+    padding: 16px 18px; 
+    flex-direction: row; 
+    gap: 12px; 
+    border-radius: 12px; 
+  }
+
+  .convite-pincel { 
+    font-size: 1.5rem; 
+    flex-shrink: 0; 
+    line-height: 1; 
+  }
+
+  .convite-texto-bloco { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 4px; 
+  }
+
+  .convite-chamada { 
+    margin: 0; 
+    font-size: 0.9rem; 
+    font-weight: 800; 
+    color: #65a30d; 
+    letter-spacing: -0.2px; 
+  }
+
+  .convite-instrucao { 
+    margin: 0; 
+    font-size: 0.82rem; 
+    color: #4b5563; 
+    line-height: 1.5; 
+  }
+
+  .convite-instrucao strong { 
+    color: #7c3aed; 
+    font-weight: 700; 
+  }
+}
+
+@media (max-width: 420px) {
+  .convite-faixa { 
+    flex-direction: column; 
+    text-align: center; 
+    gap: 10px; 
+    margin: 0 12px 28px; 
+  }
+}

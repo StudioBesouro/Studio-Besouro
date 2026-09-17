@@ -19,3 +19,67 @@
   border-radius: 8px;
   font-family: Arial, sans-serif;
 }
+
+@media (max-width: 768px) {
+  .content-grid { 
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 20px; 
+  }
+
+  .contato-hero { 
+    padding: 70px 16px 110px; 
+  }
+
+  .hero-title { 
+    font-size: 2rem; 
+  }
+
+  .hero-subtitle { 
+    font-size: 0.95rem; 
+  }
+
+  .contato-content { 
+    padding: 32px 14px 60px; 
+  }
+
+  .card { 
+    padding: 24px 18px; 
+    border-radius: 16px; 
+  }
+
+  .card-title, 
+  .admin-title { 
+    font-size: 1.25rem; 
+    margin-bottom: 16px; 
+  }
+
+  .form-group input, 
+  .form-group select, 
+  .form-group textarea { 
+    font-size: 0.9rem; 
+    padding: 10px 12px; 
+  }
+
+  .btn-enviar, 
+  .btn-admin { 
+    padding: 12px; 
+    font-size: 0.95rem; 
+  }
+
+  .benefits-list li { 
+    font-size: 0.88rem; 
+    gap: 10px; 
+    margin-bottom: 12px; 
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-title { 
+    font-size: 1.6rem; 
+  }
+
+  .hero-subtitle { 
+    font-size: 0.85rem; 
+  }
+}

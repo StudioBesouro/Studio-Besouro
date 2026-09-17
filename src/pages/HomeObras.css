@@ -221,3 +221,80 @@
   padding-left: 20px;
   padding-right: 20px;
 }
+
+@media (max-width: 768px) {
+  .home-obras-section { 
+    margin: 0 auto; 
+    padding: 24px 12px 0; 
+  }
+
+  .section-title { 
+    font-size: 1.6rem; 
+    margin-bottom: 20px; 
+  }
+
+  /* Exibe todas as categorias na tela, uma do lado da outra */
+  .categorias-filtro { 
+    display: flex;
+    flex-wrap: wrap; /* Permite organizar todas no espaço visual */
+    justify-content: center; /* Centraliza as categorias como no notebook */
+    gap: 6px; /* Espaçamento menor entre os botões */
+    margin-bottom: 20px; 
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Tamanho reduzido para caberem todas na tela do celular */
+  .categoria-btn { 
+    padding: 6px 10px; 
+    font-size: 0.72rem; 
+    white-space: nowrap;
+    flex-shrink: 1;
+  }
+
+  .obras-grid { 
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px; 
+    padding-bottom: 60px; 
+  }
+
+  .obra-imagem { 
+    height: 160px; 
+  }
+
+  .obra-info { 
+    padding: 12px; 
+  }
+
+  .obra-titulo { 
+    font-size: 0.95rem; 
+    margin-bottom: 4px; 
+  }
+
+  .obra-artista { 
+    font-size: 0.78rem; 
+  }
+}
+
+@media (max-width: 420px) {
+  /* Ajustes finos para telas de celular muito pequenas (ex: iPhone SE) */
+  .categorias-filtro {
+    gap: 4px;
+  }
+
+  .categoria-btn { 
+    padding: 5px 8px; 
+    font-size: 0.68rem; 
+  }
+
+  .obras-grid { 
+    grid-template-columns: 1fr; 
+    gap: 14px; 
+  }
+
+  .obra-imagem { 
+    height: 220px; 
+  }
+}
