@@ -272,6 +272,7 @@
 }
 
 /* --- AJUSTE EXCLUSIVO PARA O MODAL NO MOBILE --- */
+/* --- REGRA GERAL PARA DISPOSITIVOS ATÉ 768px --- */
 @media (max-width: 768px) {
   /* overlay sobe de baixo */
   .modal-overlay,
@@ -291,14 +292,14 @@
     min-width: unset;
     min-height: unset;
     max-width: 100vw;
-    max-height: 90vh;
+    max-height: 92vh; /* Garante que nunca ultrapasse a altura da tela */
     width: 100%;
-    overflow-y: auto; /* Permite rolar o modal inteiro se necessário */
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     background: #ffffff;
   }
 
-  /* Personalização da barra de rolagem (scrollbar do lado) */
+  /* Personalização da barra de rolagem (scrollbar) */
   .modal-content::-webkit-scrollbar,
   .modal-artwork-container::-webkit-scrollbar,
   .modal-info::-webkit-scrollbar,
@@ -314,7 +315,7 @@
     border-radius: 10px;
   }
 
-  /* alça visual de arrasto */
+  /* Alça visual de arrasto */
   .modal-artwork-container::before,
   .modal-content::before {
     content: '';
@@ -323,16 +324,18 @@
     height: 5px;
     background: #d1d5db;
     border-radius: 99px;
-    margin: 12px auto 6px;
+    margin: 10px auto 6px;
     flex-shrink: 0;
   }
 
-  /* Área da Imagem: ajustada para exibir a imagem completa */
+  /* Área da Imagem: Usa altura dinâmica baseada na tela */
   .modal-image-container,
   .modal-artwork-image-section {
     width: 100%;
-    max-height: 320px;
-    background: #111827; /* Fundo escuro para destacar imagens verticais/horizontais */
+    height: 40vh; /* Ocupa no máximo 40% da altura da tela */
+    max-height: 260px;
+    min-height: 180px;
+    background: #111827;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -345,45 +348,44 @@
   .modal-artwork-image,
   .modal-artwork-media-element {
     width: 100%;
-    height: auto;
-    max-height: 320px;
-    object-fit: contain; /* Exibe a imagem completa sem cortar */
+    height: 100%;
+    object-fit: contain; /* Mantém a imagem inteira sem cortar */
     display: block;
     margin: 0 auto;
   }
 
-  /* Seção de Texto/Informações: com rolagem própria e touch fluido */
+  /* Seção de Texto/Informações */
   .modal-info,
   .modal-artwork-info-section {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    padding: 20px 20px 40px;
+    padding: 16px 20px 32px;
     width: 100%;
     box-sizing: border-box;
   }
 
   .modal-info h2,
   .modal-artwork-title {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     margin-top: 0;
     color: #1e293b;
   }
 
   .modal-meta {
-    font-size: 0.8rem;
-    padding: 4px 12px;
-    margin-bottom: 12px;
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    margin-bottom: 10px;
     display: inline-block;
   }
 
   .modal-description,
   .modal-artwork-description {
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-size: 0.88rem;
+    line-height: 1.55;
     color: #475569;
   }
 
@@ -404,20 +406,205 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     z-index: 200;
     cursor: pointer;
+    border: none;
   }
 
   .btn-artista-modal {
-    font-size: 0.85rem;
-    padding: 6px 16px;
-    margin-bottom: 12px;
+    font-size: 0.82rem;
+    padding: 5px 14px;
+    margin-bottom: 10px;
   }
 
-  /* Setas de navegação ajustadas para a área da imagem */
+  /* Setas de navegação centralizadas na área da imagem */
   .modal-artwork-overlay > button {
-    top: 140px !important;
+    top: 20vh !important;
+    transform: translateY(-50%);
     width: 36px !important;
     height: 36px !important;
     font-size: 1.1rem !important;
     background: rgba(255, 255, 255, 0.85) !important;
+  }
+}
+
+/* --- AJUSTE EXCLUSIVO PARA TELAS DE POUCA ALTURA (Ex: 684x607, Celular Deitado/Landscape) --- */
+/* ==========================================
+   CORREÇÃO DEFINITIVA DO MODAL MOBILE
+   ========================================== */
+@media (max-width: 768px) {
+  /* Overlay centralizado sem cortes */
+  .modal-overlay,
+  .modal-artwork-overlay {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  /* Container limpo sem pseudo-elementos (::before) criando faixas pretas */
+  .modal-content,
+  .modal-artwork-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+
+  /* Remove faixas, alças ou sombras ovais geradas no topo */
+  .modal-artwork-container::before,
+  .modal-content::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* ----------------------------------
+     ÁREA DA IMAGEM: Aumentada e visível
+     ---------------------------------- */
+  .modal-image-container,
+  .modal-artwork-image-section {
+    position: relative;
+    width: 100%;
+    height: 320px; /* Altura suficiente para ver a arte com clareza */
+    background: #18181b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .modal-image-container img,
+  .modal-artwork-image,
+  .modal-artwork-media-element {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Exibe a obra inteira sem cortar ou achatar */
+    display: block;
+    border-radius: 6px;
+  }
+
+  /* BOTÃO FECHAR (X): Pequeno, discreto e fixado no canto superior direito */
+.modal-close,
+.modal-artwork-close-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  left: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  float: none !important;
+  
+  /* Tamanho reduzido e compacto */
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  
+  /* Estilo visual limpo */
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  
+  /* Centralização do ícone 'x' */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  line-height: 1 !important;
+  
+  /* Garante que fique acima da imagem sem ser coberto */
+  z-index: 999 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+  padding: 0 !important;
+}
+
+.modal-close:hover,
+.modal-artwork-close-btn:hover {
+  background: rgba(0, 0, 0, 0.85) !important;
+  transform: scale(1.05);
+}
+  /* SETAS DE NAVEGAÇÃO: Ajustadas para ficarem DENTRO do modal */
+  .modal-artwork-overlay > button {
+    position: absolute !important;
+    top: 160px !important; /* Alinhado ao centro da imagem */
+    transform: translateY(-50%) !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: none !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
+    color: #000000 !important;
+    font-size: 1rem !important;
+    z-index: 90 !important;
+  }
+
+  /* ----------------------------------
+     INFORMAÇÕES E DESCRIÇÃO
+     ---------------------------------- */
+  .modal-info,
+  .modal-artwork-info-section {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+  }
+
+  .modal-info h2,
+  .modal-artwork-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: #111827;
+  }
+
+  .btn-artista-modal {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+
+  .modal-meta {
+    display: inline-block;
+    font-size: 0.8rem;
+    background: #f3f4f6;
+    color: #374151;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+
+  .modal-description,
+  .modal-artwork-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4b5563;
+    margin: 0;
+  }
+}
+
+/* Ajuste específico para telas muito baixas (Landscape / Celulares deitados) */
+@media (max-height: 600px) and (max-width: 768px) {
+  .modal-image-container,
+  .modal-artwork-image-section {
+    height: 200px;
+  }
+
+  .modal-artwork-overlay > button {
+    top: 100px !important;
   }
 }
